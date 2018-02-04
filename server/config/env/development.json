@@ -1,0 +1,10 @@
+{
+	"database": {
+		"name": "piris-db",
+		"username": "root",
+		"password": "Root1234",
+		"host": "localhost",
+		"port": 3306,
+		"logging": true
+	}
+}

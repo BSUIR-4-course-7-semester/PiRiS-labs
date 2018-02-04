@@ -1,0 +1,9 @@
+{
+  "verbose": true,
+  "watch": [
+    "server.js",
+    "server"
+  ],
+  "ignore": [],
+  "ext": "js json"
+}
