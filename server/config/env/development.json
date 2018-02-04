@@ -2,7 +2,7 @@
 	"database": {
 		"name": "piris-db",
 		"username": "root",
-		"password": "Root1234",
+		"password": "root",
 		"host": "localhost",
 		"port": 3306,
 		"logging": true

@@ -4,9 +4,8 @@ const Test = require('../models/test');
 module.exports = (router) => {
 
   router.get('/test', async (req, resp) => {
-    resp.json({
-      message: 'OK'
-    });
+    const tests = await Test.findAll();
+    resp.json(tests);
   });
 
   router.post('/test', async (req, resp) => {
@@ -20,7 +19,7 @@ module.exports = (router) => {
         message: err.message
       });
     }
-    
+
   });
 
 };
