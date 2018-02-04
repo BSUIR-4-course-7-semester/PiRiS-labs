@@ -5,9 +5,12 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      allowNull: false,
     },
     title: DataTypes.STRING
   });
+
+  MaritalStatus.sync();
 
   return MaritalStatus;
 };
