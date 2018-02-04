@@ -1,7 +1,7 @@
 const database = require('../../config/db').database;
 const sequelize = require('sequelize');
 
-const TestSchema = database.define('test2', {
+const TestSchema = database.define('test', {
   id: {
     type: sequelize.INTEGER,
     primaryKey: true,
@@ -15,6 +15,6 @@ const TestSchema = database.define('test2', {
   instanceMethods: {}
 });
 
-TestSchema.sync({})
+TestSchema.sync({});
 
 module.exports = TestSchema;
