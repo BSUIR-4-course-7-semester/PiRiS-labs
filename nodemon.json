@@ -4,6 +4,9 @@
     "server.js",
     "server"
   ],
-  "ignore": [],
+  "ignore": [
+    "server/seeders",
+    "server/migrations"
+  ],
   "ext": "js json"
 }

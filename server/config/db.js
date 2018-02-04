@@ -19,6 +19,4 @@ const database = new Sequelize(settings.database.name, settings.database.usernam
   logging: console.log
 });
 
-module.exports = {
-  database: database
-};
+module.exports = database;

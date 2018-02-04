@@ -12,7 +12,9 @@ const TestSchema = database.define('test', {
   },
 }, {
   timestamps: false,
-  instanceMethods: {}
+  instanceMethods: {},
+  freezeTableName: true,
+  tableName: 'test'
 });
 
 TestSchema.sync({});

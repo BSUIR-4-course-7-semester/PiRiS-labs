@@ -1,0 +1,9 @@
+{
+  "development": {
+    "username": "root",
+    "password": "root",
+    "database": "piris-db",
+    "host": "localhost",
+    "dialect": "mysql"
+  }
+}

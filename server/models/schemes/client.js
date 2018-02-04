@@ -1,7 +1,7 @@
 const database = require('../../config/db').database;
 const sequelize = require('sequelize');
 
-const ClientSchema = database.define('client', {
+const ClientSchema = database.define('Client', {
   id: {
     type: sequelize.INTEGER,
     primaryKey: true,
@@ -103,7 +103,7 @@ const ClientSchema = database.define('client', {
   timestamps: false,
   instanceMethods: {},
   freezeTableName: true,
-  tableName: 'client'
+  tableName: 'Client'
 });
 
 ClientSchema.sync({});
