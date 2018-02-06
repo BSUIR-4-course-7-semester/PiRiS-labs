@@ -15,6 +15,10 @@ const database = new Sequelize(settings.database.name, settings.database.usernam
     idle: 10000,
     acquire: 30000
   },
+  define: {
+    charset: 'utf8',
+    collate: 'utf8_general_ci',
+  },
   benchmark: true,
   logging: console.log
 });

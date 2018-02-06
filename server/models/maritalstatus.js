@@ -8,9 +8,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     title: DataTypes.STRING
+  }, {
+    timestamps: false
   });
 
-  MaritalStatus.sync();
-
-  return MaritalStatus;
+  return MaritalStatus.sync()
+  .then(() => MaritalStatus);
 };

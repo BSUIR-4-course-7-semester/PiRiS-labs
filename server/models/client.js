@@ -99,6 +99,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: true,
     }
+  }, {
+    timestamps: false
   });
 
   Client.associate = function(models) {
@@ -107,7 +109,6 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
-  Client.sync();
-
-  return Client;
+  return Client.sync()
+  .then(() => Client);
 };

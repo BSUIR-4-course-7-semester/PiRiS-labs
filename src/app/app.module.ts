@@ -3,16 +3,29 @@ import { NgModule } from '@angular/core';
 
 
 import { AppComponent } from './app.component';
+import { ClientFormComponent } from "./components/client-form/client-form.component";
+import { ClientListComponent } from "./components/client-list/client-list.component";
+import {HttpModule} from "@angular/http";
+import {FormsModule} from "@angular/forms";
+import {DataService} from "./services/data.service";
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    ClientFormComponent,
+    ClientListComponent,
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    HttpModule,
+    FormsModule,
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [
+    DataService,
+  ],
+  bootstrap: [
+    AppComponent,
+  ]
 })
 export class AppModule { }

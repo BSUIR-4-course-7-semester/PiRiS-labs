@@ -10,23 +10,26 @@ const models = {};
 
 const database = require('../config/db');
 
-fs
+Promise.all(
+  fs
   .readdirSync(__dirname)
-  .filter(file => {
-    return (!file.startsWith('.')) && (file !== basename) && (file.endsWith('.js'));
-  })
-  .forEach(file => {
-    const model = require(path.join(__dirname, file))(database, DataTypes);
-    models[model.name] = model;
+  .filter(file => (!file.startsWith('.')) &&
+                  (file !== basename) &&
+                  (file.endsWith('.js')))
+  .map(file => require(path.join(__dirname, file))(database, DataTypes))
+)
+.then(items => {
+  items.forEach(model => models[model.name] = model);
+})
+.then(() => {
+  Object.keys(models).forEach(modelName => {
+    if (models[modelName].associate) {
+      models[modelName].associate(models);
+    }
   });
-
-Object.keys(models).forEach(modelName => {
-  if (models[modelName].associate) {
-    models[modelName].associate(models);
-  }
 });
 
 models.database = database;
 models.Sequelize = Sequelize;
 
-module.exports = models;
+module.exports = () => models;
