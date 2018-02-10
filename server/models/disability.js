@@ -1,7 +1,7 @@
 const forceDatabaseUpdate = !!process.env.FORCE_DB_UPDATE;
 
 module.exports = (sequelize, DataTypes) => {
-  const MaritalStatus = sequelize.define('MaritalStatus', {
+  const Disability = sequelize.define('Disability', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -13,6 +13,6 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: false
   });
 
-  return MaritalStatus.sync({ force: forceDatabaseUpdate })
-  .then(() => MaritalStatus);
+  return Disability.sync({ force: forceDatabaseUpdate })
+  .then(() => Disability);
 };

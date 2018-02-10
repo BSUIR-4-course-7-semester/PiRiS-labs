@@ -4,10 +4,10 @@ module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.bulkInsert('MaritalStatuses', [
       {
-        title: 'married',
+        title: 'замужем / женат',
       },
       {
-        title: 'single',
+        title: 'холост / не замужем',
       }
     ], {});
   },

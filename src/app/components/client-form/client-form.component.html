@@ -1,6 +1,6 @@
 <form #form="ngForm"
-      (submit)="onSubmit()"
-      *ngIf="data"
+      (submit)="onSubmit($event, form)"
+      *ngIf="data && client"
 >
 
   <h3>Клиент</h3>
@@ -15,18 +15,18 @@
                name="surname"
                class="form-control"
                required
-               [pattern]="nameRegExp"
+               [pattern]="NAME_REG_EXP"
                #surname="ngModel"
                [(ngModel)]="client.surname"
         >
 
-        <div *ngIf="form.submitted && surname.invalid" class="alert alert-danger"
+        <div *ngIf="surname.errors?.required" class="alert alert-danger"
              role="alert"
         >
           Необходимо ввести фамилию
         </div>
 
-        <div *ngIf="form.submitted && surname.invalid" class="alert alert-danger"
+        <div *ngIf="surname.errors?.pattern" class="alert alert-danger"
              role="alert"
         >
           Кириллицей
@@ -39,18 +39,18 @@
                name="first_name"
                class="form-control"
                required
-               [pattern]="nameRegExp"
+               [pattern]="NAME_REG_EXP"
                #first_name="ngModel"
                [(ngModel)]="client.first_name"
         >
 
-        <div *ngIf="form.submitted && first_name.invalid" class="alert alert-danger"
+        <div *ngIf="first_name.errors?.required" class="alert alert-danger"
              role="alert"
         >
           Необходимо ввести имя
         </div>
 
-        <div *ngIf="form.submitted && first_name.invalid" class="alert alert-danger"
+        <div *ngIf="first_name.errors?.pattern" class="alert alert-danger"
              role="alert"
         >
           Кириллицей
@@ -63,18 +63,18 @@
                name="patronymic"
                class="form-control"
                required
-               [pattern]="nameRegExp"
+               [pattern]="NAME_REG_EXP"
                #patronymic="ngModel"
                [(ngModel)]="client.patronymic"
         >
 
-        <div *ngIf="form.submitted && patronymic.invalid" class="alert alert-danger"
+        <div *ngIf="patronymic.errors?.required" class="alert alert-danger"
              role="alert"
         >
           Необходимо ввести отчество
         </div>
 
-        <div *ngIf="form.submitted && patronymic.invalid" class="alert alert-danger"
+        <div *ngIf="patronymic.errors?.pattern" class="alert alert-danger"
              role="alert"
         >
           Кириллицей
@@ -91,7 +91,7 @@
                [(ngModel)]="client.birth_date"
         >
 
-        <div *ngIf="form.submitted && birth_date.invalid" class="alert alert-danger"
+        <div *ngIf="birth_date.invalid" class="alert alert-danger"
              role="alert"
         >
           Неправильная дата рождения
@@ -104,11 +104,14 @@
                name="passport_series"
                class="form-control"
                required
+               minlength="2"
+               maxlength="2"
                #passport_series="ngModel"
                [(ngModel)]="client.passport_series"
         >
 
-        <div *ngIf="form.submitted && passport_series.invalid" class="alert alert-danger"
+        <div *ngIf="(passport_series.errors?.required || passport_series.errors?.minlength || passport_series.errors?.maxlength)"
+             class="alert alert-danger"
              role="alert"
         >
           Неправильная серия паспорта
@@ -121,14 +124,16 @@
                name="passport_number"
                class="form-control"
                required
+               [pattern]="PASSPORT_NUMBER_REG_EXP"
                #passport_number="ngModel"
                [(ngModel)]="client.passport_number"
         >
 
-        <div *ngIf="form.submitted && passport_number.invalid" class="alert alert-danger"
+        <div *ngIf="(passport_number.errors?.required || passport_number.errors?.pattern)"
+             class="alert alert-danger"
              role="alert"
         >
-          Неправильный номер паспорта
+          Неправильный номер паспорта (7 цифр)
         </div>
       </div>
 
@@ -141,6 +146,13 @@
                #passport_reducer="ngModel"
                [(ngModel)]="client.passport_reducer"
         >
+
+        <div *ngIf="passport_reducer.errors?.required"
+             class="alert alert-danger"
+             role="alert"
+        >
+          Необходимое поле
+        </div>
       </div>
 
       <div class="form-group">
@@ -153,10 +165,10 @@
                [(ngModel)]="client.passport_reducing_date"
         >
 
-        <div *ngIf="form.submitted && birth_date.invalid" class="alert alert-danger"
+        <div *ngIf="birth_date.invalid" class="alert alert-danger"
              role="alert"
         >
-          Неправильная дата рождения
+          Неправильная дата выдачи паспорта
         </div>
       </div>
 
@@ -166,9 +178,23 @@
                name="identification_number"
                class="form-control"
                required
+               [pattern]="IDENTIFICATION_NUMBER_REG_EXP"
                #identification_number="ngModel"
                [(ngModel)]="client.identification_number"
         >
+
+        <div *ngIf="identification_number.errors?.required"
+             class="alert alert-danger"
+             role="alert"
+        >
+          Необходимое поле
+        </div>
+        <div *ngIf="identification_number.errors?.pattern"
+             class="alert alert-danger"
+             role="alert"
+        >
+          Неправильный идентификационный номер
+        </div>
       </div>
 
       <div class="form-group">
@@ -180,17 +206,34 @@
                #birth_place="ngModel"
                [(ngModel)]="client.birth_place"
         >
+
+        <div *ngIf="birth_place.errors?.required"
+             class="alert alert-danger"
+             role="alert"
+        >
+          Необходимое поле
+        </div>
       </div>
 
       <div class="form-group">
         <label>Фактический город проживания</label>
-        <input type="text"
-               name="actual_residence_city_id"
-               class="form-control"
-               required
-               #actual_residence_city_id="ngModel"
-               [(ngModel)]="client.actual_residence_city_id"
+        <select name="actual_residence_city_id"
+                class="form-control"
+                required
+                #actual_residence_city_id="ngModel"
+                [(ngModel)]="client.actual_residence_city_id"
         >
+          <option *ngFor="let status of data.cities"
+                  [value]="status.id"
+          >{{ status.title }}</option>
+        </select>
+
+        <div *ngIf="actual_residence_city_id.errors?.required"
+             class="alert alert-danger"
+             role="alert"
+        >
+          Необходимое поле
+        </div>
       </div>
 
       <div class="form-group">
@@ -202,6 +245,13 @@
                #actual_address="ngModel"
                [(ngModel)]="client.actual_address"
         >
+
+        <div *ngIf="actual_address.errors?.required"
+             class="alert alert-danger"
+             role="alert"
+        >
+          Необходимое поле
+        </div>
       </div>
 
     </div>
@@ -211,23 +261,37 @@
       <div class="form-group">
         <label>Домашний телефон</label>
         <input type="text"
-               name="home_tel_phone"
+               name="home_tel_number"
                class="form-control"
-               required
-               #home_tel_phone="ngModel"
-               [(ngModel)]="client.home_tel_phone"
+               [pattern]="HOME_TEL_REG_EXP"
+               #home_tel_number="ngModel"
+               [(ngModel)]="client.home_tel_number"
         >
+
+        <div *ngIf="home_tel_number.errors?.pattern"
+             class="alert alert-danger"
+             role="alert"
+        >
+          Неправильный номер (`80` и 10 цифр)
+        </div>
       </div>
 
       <div class="form-group">
         <label>Мобильный телефон</label>
         <input type="text"
-               name="mobile_tel_phone"
+               name="mobile_tel_number"
                class="form-control"
-               required
-               #mobile_tel_phone="ngModel"
-               [(ngModel)]="client.mobile_tel_phone"
+               [pattern]="MOBILE_TEL_REG_EXP"
+               #mobile_tel_number="ngModel"
+               [(ngModel)]="client.mobile_tel_number"
         >
+
+        <div *ngIf="mobile_tel_number.errors?.pattern"
+             class="alert alert-danger"
+             role="alert"
+        >
+          Неправильный номер (`+375` и 9 цифр)
+        </div>
       </div>
 
       <div class="form-group">
@@ -236,9 +300,24 @@
                name="email"
                class="form-control"
                required
+               [pattern]="EMAIL_REG_EXP"
                #email="ngModel"
                [(ngModel)]="client.email"
         >
+
+        <div *ngIf="email.errors?.pattern"
+             class="alert alert-danger"
+             role="alert"
+        >
+          Неправильная почта
+        </div>
+
+        <div *ngIf="email.errors?.required"
+             class="alert alert-danger"
+             role="alert"
+        >
+          Необходимое поле
+        </div>
       </div>
 
       <div class="form-group">
@@ -250,6 +329,13 @@
                #job_place="ngModel"
                [(ngModel)]="client.job_place"
         >
+
+        <div *ngIf="job_place.errors?.required"
+             class="alert alert-danger"
+             role="alert"
+        >
+          Необходимое поле
+        </div>
       </div>
 
       <div class="form-group">
@@ -261,6 +347,13 @@
                #job_position="ngModel"
                [(ngModel)]="client.job_position"
         >
+
+        <div *ngIf="job_position.errors?.required"
+             class="alert alert-danger"
+             role="alert"
+        >
+          Необходимое поле
+        </div>
       </div>
 
       <div class="form-group">
@@ -272,6 +365,13 @@
                #registration_address="ngModel"
                [(ngModel)]="client.registration_address"
         >
+
+        <div *ngIf="registration_address.errors?.required"
+             class="alert alert-danger"
+             role="alert"
+        >
+          Необходимое поле
+        </div>
       </div>
 
       <div class="form-group">
@@ -286,54 +386,89 @@
                   [value]="status.id"
           >{{ status.title }}</option>
         </select>
+
+        <div *ngIf="marital_status_id.errors?.required"
+             class="alert alert-danger"
+             role="alert"
+        >
+          Необходимое поле
+        </div>
       </div>
 
       <div class="form-group">
         <label>Национальность</label>
-        <input type="text"
-               name="nationality_id"
-               class="form-control"
-               required
-               #nationality_id="ngModel"
-               [(ngModel)]="client.nationality_id"
+        <select name="nationality_id"
+                class="form-control"
+                required
+                #nationality_id="ngModel"
+                [(ngModel)]="client.nationality_id"
         >
+          <option *ngFor="let status of data.nationalities"
+                  [value]="status.id"
+          >{{ status.title }}</option>
+        </select>
+
+        <div *ngIf="nationality_id.errors?.required"
+             class="alert alert-danger"
+             role="alert"
+        >
+          Необходимое поле
+        </div>
       </div>
 
       <div class="form-group">
         <label>Инвалидность</label>
-        <input type="text"
-               name="disability_id"
-               class="form-control"
-               required
-               #disability_id="ngModel"
-               [(ngModel)]="client.disability_id"
+        <select name="disability_id"
+                class="form-control"
+                #disability_id="ngModel"
+                [(ngModel)]="client.disability_id"
         >
+          <option value="0">Нет</option>
+          <option *ngFor="let status of data.disabilities"
+                  [value]="status.id"
+          >{{ status.title }}</option>
+        </select>
       </div>
 
-      <div class="form-group">
-        <label>Пенсионер</label>
-        <input type="text"
-               name="pensioner"
-               class="form-control"
-               #pensioner="ngModel"
-               [(ngModel)]="client.pensioner"
-        >
+      <div class="form-check">
+        <label class="form-check-label">
+          <input type="checkbox"
+                 class="form-check-input"
+                 name="pensioner"
+                 #pensioner="ngModel"
+                 [(ngModel)]="client.pensioner"
+          >
+          Пенсионер
+        </label>
       </div>
 
       <div class="form-group">
         <label>Месячный доход</label>
-        <input type="text"
+        <input type="number"
+               min="0.00"
+               max="100000.00"
+               step="0.01"
                name="monthly_revenue"
                class="form-control"
                #monthly_revenue="ngModel"
                [(ngModel)]="client.monthly_revenue"
         >
+
+        <div *ngIf="monthly_revenue.errors?.invalid"
+             class="alert alert-danger"
+             role="alert"
+        >
+          Неправильное значение
+        </div>
       </div>
 
     </div>
 
   </div>
 
-  <button type="submit" class="btn btn-primary">Готово</button>
+  <button type="submit"
+          class="btn btn-primary"
+          [disabled]="!form.valid"
+  >{{client.id ? 'Обновить' : 'Создать'}}</button>
 
 </form>

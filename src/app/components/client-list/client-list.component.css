@@ -1,0 +1,20 @@
+.client-list {
+  margin: 5px;
+}
+
+.client-list li {
+  cursor: pointer;
+}
+
+.client-list li:hover {
+  background-color: #ddd;
+  border-color: #ddd;
+}
+
+.delete-btn {
+  opacity: 0.5;
+}
+
+.delete-btn:hover {
+  opacity: 1;
+}

@@ -1,7 +1,6 @@
-import { Component } from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {Client} from '../../entities/client';
-import {Form} from "@angular/forms";
-import {DataService} from "../../services/data.service";
+import {DataService} from '../../services/data.service';
 
 @Component({
   selector: 'client-form',
@@ -9,8 +8,15 @@ import {DataService} from "../../services/data.service";
   styleUrls: ['./client-form.component.css']
 })
 export class ClientFormComponent {
-  NAME_REG_EXP = /^А-Я[а-я]*$/;
-  client = new Client();
+  NAME_REG_EXP = /^[А-Я][а-я]*$/;
+  PASSPORT_NUMBER_REG_EXP = /^\d{7}$/;
+  IDENTIFICATION_NUMBER_REG_EXP = /^\d{7}[A-Z]\d{3}[A-Z]{2}\d$/;
+  EMAIL_REG_EXP = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+  MOBILE_TEL_REG_EXP = /^\+375\d{9}$/;
+  HOME_TEL_REG_EXP = /^80\d{9}$/;
+
+  @Input() client = new Client();
+  @Output() ready = new EventEmitter();
 
   data: any;
 
@@ -21,14 +27,10 @@ export class ClientFormComponent {
     });
   }
 
-  onSubmit() {
-    return this.dataService.createClient(this.client)
-    .then(data => {
-      console.log(data);
-    })
-    .catch(err => {
-      console.error(err);
-    });
+  onSubmit(event, form) {
+    event.preventDefault();
+    if(!form.valid) return;
+    this.ready.emit(this.client);
   }
 
 }
