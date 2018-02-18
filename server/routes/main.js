@@ -71,7 +71,7 @@ module.exports = (router) => {
   });
 
   router.get('/credit-conditions', async (req, resp) => {
-    const creditConditions = await Models().Credit.findAll();
+    const creditConditions = await Models().Credit.findAll({ include: [{ all: true }] });
     resp.json(creditConditions);
   });
 

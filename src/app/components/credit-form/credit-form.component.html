@@ -19,7 +19,7 @@
         >
           <option *ngFor="let client of clients"
                   [value]="client.id"
-          >{{ client.title }}</option>
+          >{{ client.fullname }} ({{ client.passport_series }} {{ client.passport_number }})</option>
         </select>
 
         <div *ngIf="client_id.errors?.required"
@@ -29,6 +29,31 @@
           Необходимое поле
         </div>
       </div>
+
+      <ng-container *ngIf="creditCondition">
+
+        <div class="form-group">
+          <label>Срок</label>
+          <select name="term"
+                  class="form-control"
+                  required
+                  #term="ngModel"
+                  [(ngModel)]="creditOrder.term"
+          >
+            <option *ngFor="let term of creditCondition.terms"
+                    [value]="term"
+            >{{ term }}</option>
+          </select>
+
+          <div *ngIf="term.errors?.required"
+               class="alert alert-danger"
+               role="alert"
+          >
+            Необходимое поле
+          </div>
+        </div>
+
+      </ng-container>
 
     </div>
 

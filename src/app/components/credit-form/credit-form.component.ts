@@ -23,6 +23,10 @@ export class CreditFormComponent {
     return this._message;
   }
 
+  get creditCondition() {
+    return this.creditConditions.find(c => c.id == this.creditOrder.credit_id);
+  }
+
   creditOrder = new CreditOrder();
 
   constructor(private dataService: DataService) {

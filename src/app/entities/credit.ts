@@ -12,7 +12,7 @@ export class Credit {
     const result = new Credit();
     result.id = data.id;
     result.title = data.title;
-    result.terms = JSON.parse(data.terms);
+    result.terms = data.terms;
     result.min_amount = data.min_amount;
     result.max_amount = data.max_amount;
     result.currency = data.currency;
