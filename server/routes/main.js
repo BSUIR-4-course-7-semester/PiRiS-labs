@@ -70,4 +70,9 @@ module.exports = (router) => {
     });
   });
 
+  router.get('/credit-conditions', async (req, resp) => {
+    const creditConditions = await Models().Credit.findAll();
+    resp.json(creditConditions);
+  });
+
 };

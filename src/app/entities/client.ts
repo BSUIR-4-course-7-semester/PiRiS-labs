@@ -53,4 +53,8 @@ export class Client {
     result.monthly_revenue = data.monthly_revenue;
     return result;
   }
+
+  get fullname() {
+    return `${this.surname} ${this.first_name} ${this.patronymic}`;
+  }
 }

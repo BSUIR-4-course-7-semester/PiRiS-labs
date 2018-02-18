@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
 import {Client} from '../entities/client';
+import {Credit} from '../entities/credit';
 
 @Injectable()
 export class DataService {
@@ -39,5 +40,12 @@ export class DataService {
     .toPromise()
     .then(res => res.json())
     .then(clients => clients.map(c => Client.createFromServerResponse(c)));
+  }
+
+  fetchCreditConditions() {
+    return this.http.get('/api/credit-conditions')
+    .toPromise()
+    .then(res => res.json())
+    .then(creditConditions => creditConditions.map(c => Credit.createFromServerResponse(c)));
   }
 }

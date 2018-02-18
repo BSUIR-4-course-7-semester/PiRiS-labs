@@ -1,0 +1,44 @@
+<form #form="ngForm"
+      (submit)="handleSubmit()"
+      *ngIf="creditOrder"
+>
+
+  <h3>Кредит</h3>
+
+  <div class="row">
+
+    <div class="col-md-6">
+
+      <div class="form-group">
+        <label>Клиент</label>
+        <select name="client_id"
+                class="form-control"
+                required
+                #client_id="ngModel"
+                [(ngModel)]="creditOrder.client_id"
+        >
+          <option *ngFor="let client of clients"
+                  [value]="client.id"
+          >{{ client.title }}</option>
+        </select>
+
+        <div *ngIf="client_id.errors?.required"
+             class="alert alert-danger"
+             role="alert"
+        >
+          Необходимое поле
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <button type="submit"
+          class="btn btn-primary"
+          [disabled]="!form.valid"
+  >Взять кредит</button>
+
+</form>
+
+
