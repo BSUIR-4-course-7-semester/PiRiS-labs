@@ -48,4 +48,11 @@ export class DataService {
     .then(res => res.json())
     .then(creditConditions => creditConditions.map(c => Credit.createFromServerResponse(c)));
   }
+
+  fetchDeposits() {
+    // return this.http.get('/api/deposit')
+    //   .toPromise()
+    //   .then(res => res.json())
+    //   .then(clients => clients.map(c => Client.createFromServerResponse(c)));
+  }
 }
