@@ -30,6 +30,28 @@
         </div>
       </div>
 
+      <div class="form-group">
+        <label>Кредитный план</label>
+        <select name="credit_id"
+                class="form-control"
+                required
+                #credit_id="ngModel"
+                (change)="handleCreditConditionChange()"
+                [(ngModel)]="creditOrder.credit_id"
+        >
+          <option *ngFor="let cc of creditConditions"
+                  [value]="cc.id"
+          >{{cc.title}}</option>
+        </select>
+
+        <div *ngIf="credit_id.errors?.required"
+             class="alert alert-danger"
+             role="alert"
+        >
+          Необходимое поле
+        </div>
+      </div>
+
       <ng-container *ngIf="creditCondition">
 
         <div class="form-group">
@@ -39,6 +61,7 @@
                   required
                   #term="ngModel"
                   [(ngModel)]="creditOrder.term"
+                  (change)="handleCreditTermChange($event)"
           >
             <option *ngFor="let term of creditCondition.terms"
                     [value]="term"
@@ -53,8 +76,97 @@
           </div>
         </div>
 
+        <div class="form-group">
+          <label>Валюта</label>
+          <input name="currency"
+                 class="form-control"
+                 required
+                 readonly
+                 #currency="ngModel"
+                 (ngModel)="creditOrder.currency"
+                 [ngModel]="creditCondition.currency"
+          >
+
+          <div *ngIf="currency.errors?.required"
+               class="alert alert-danger"
+               role="alert"
+          >
+            Необходимое поле
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Дата начала кредитной программы</label>
+          <input name="begin_date"
+                 class="form-control"
+                 type="date"
+                 required
+                 readonly
+                 #begin_date="ngModel"
+                 [(ngModel)]="creditOrder.begin_date"
+          >
+          <label>Дата окончания кредитной программы</label>
+          <input name="end_date"
+                 class="form-control"
+                 type="date"
+                 required
+                 readonly
+                 #end_date="ngModel"
+                 [(ngModel)]="creditOrder.end_date"
+          >
+        </div>
+
+        <div class="form-group">
+          <label>Процент</label>
+          <input name="interest_rate"
+                 class="form-control"
+                 required
+                 readonly
+                 #interest_rate="ngModel"
+                 (ngModel)="creditOrder.interest_rate"
+                 [ngModel]="creditCondition.interest_rate"
+          >
+        </div>
+
+        <div class="form-group">
+          <label>Сумма кредита</label>
+          <input name="amount"
+                 class="form-control"
+                 type="number"
+                 [minValue]="creditCondition.min_amount"
+                 [maxValue]="creditCondition.max_amount"
+                 required
+                 #amount="ngModel"
+                 (change)="prepareChartData()"
+                 [(ngModel)]="creditOrder.amount"
+          >
+
+          <div *ngIf="amount.errors?.minValue"
+               class="alert alert-danger"
+               role="alert"
+          >
+            Мало
+          </div>
+
+          <div *ngIf="amount.errors?.maxValue"
+               class="alert alert-danger"
+               role="alert"
+          >
+            Губу закатай
+          </div>
+        </div>
+
       </ng-container>
 
+    </div>
+
+    <div class="col-md-6">
+      <fusioncharts
+        [id]="chartInfo.id"
+        [type]="chartInfo.type"
+        [dataFormat]="chartInfo.dataFormat"
+        [dataSource]="chartInfo.dataSource"
+      ></fusioncharts>
     </div>
 
   </div>
