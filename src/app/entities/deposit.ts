@@ -2,7 +2,7 @@ export class Deposit {
   id: number;
   deposit_type_id: number;
   number: number;
-  currency_type_id: number;
+  currency_type: string;
   start_date: Date;
   end_date: Date;
   term_in_month: number;
@@ -15,7 +15,7 @@ export class Deposit {
     result.id = data.id;
     result.deposit_type_id = data.deposit_type_id;
     result.number = data.number;
-    result.currency_type_id = data.currency_type_id;
+    result.currency_type = data.currency_type;
     result.start_date = data.start_date;
     result.end_date = data.end_date;
     result.term_in_month = data.term_in_month;

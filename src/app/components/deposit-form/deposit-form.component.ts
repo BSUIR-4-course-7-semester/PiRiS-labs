@@ -9,35 +9,36 @@ import {Deposit} from "../../entities/deposit";
   styleUrls: ['./deposit-form.component.css']
 })
 export class DepositFormComponent {
-  NAME_REG_EXP = /^[А-Я][а-я]*$/;
-  PASSPORT_NUMBER_REG_EXP = /^\d{7}$/;
-  IDENTIFICATION_NUMBER_REG_EXP = /^\d{7}[A-Z]\d{3}[A-Z]{2}\d$/;
-  EMAIL_REG_EXP = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-  MOBILE_TEL_REG_EXP = /^\+375\d{9}$/;
-  HOME_TEL_REG_EXP = /^80\d{9}$/;
+  NATURAL_NUMBERS_EXP = /^[0-9]{1,7}$/;
 
   data: any;
   clients: Client[];
   deposit: Deposit;
+  selected_deposit_type: any;
 
   constructor(private dataService: DataService) {
+    this.deposit = new Deposit();
+
     Promise.all([
-      this.dataService.fetchDepositCondtions()
-      .then(data => {
-        debugger
-        this.data = data
-      }),
+      this.dataService.fetchDepositConditions()
+      .then(data => this.data = data),
       this.dataService.fetchClients()
-      .then(clients => {
-        debugger
-        this.clients = clients
-      })
+      .then(clients => this.clients = clients)
     ]);
   }
 
+  depositTypeSelectHandle(deposit_type_id) {
+    this.selected_deposit_type = this.data.deposit_types
+      .find(type => type.id === parseInt(deposit_type_id, 10));
+
+    this.deposit.interest_rate = this.selected_deposit_type.interest_rate;
+    this.deposit.term_in_month = this.selected_deposit_type.term_in_month;
+    this.deposit.currency_type = this.selected_deposit_type.currency_type;
+  }
+
   onSubmit(event, form) {
-    // if(!form.valid) return;
-    // this.ready.emit(this.client);
+    if(!form.valid) return;
+    return this.dataService.createDeposit(this.deposit);
   }
 
 }

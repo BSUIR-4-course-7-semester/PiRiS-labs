@@ -15,8 +15,8 @@ module.exports = (sequelize, DataTypes) => {
     number: {
       type: DataTypes.INTEGER,
     },
-    currency_type_id: {
-      type: DataTypes.INTEGER,
+    currency_type: {
+      type: DataTypes.STRING,
     },
     start_date: {
       type: DataTypes.DATEONLY,
@@ -45,10 +45,6 @@ module.exports = (sequelize, DataTypes) => {
     this.belongsTo(models['DepositType'], {
       foreignKey: 'deposit_type_id',
       as: 'deposit_type'
-    });
-    this.belongsTo(models['CurrencyType'], {
-      foreignKey: 'currency_type_id',
-      as: 'currency_type'
     });
     this.belongsTo(models['Client'], {
       foreignKey: 'client_id',

@@ -124,8 +124,8 @@ module.exports = (router) => {
 
   router.get('/deposit-conditions', async (req, res) => {
     try {
-      const data = await Models().DepositType.findAll();
-      res.json(data);
+      const deposit_types = await Models().DepositType.findAll();
+      res.json({ deposit_types });
     } catch(err) {
       console.error(err);
       err = handleError(err);

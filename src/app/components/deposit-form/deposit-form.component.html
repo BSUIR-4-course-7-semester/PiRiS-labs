@@ -19,10 +19,10 @@
         >
           <option *ngFor="let client of clients"
                   [value]="client.id"
-          >{{ client.first_name + client.surname + client.patronymic }}</option>
+          >{{  client.surname + ' ' + client.first_name + ' ' + client.patronymic }}</option>
         </select>
 
-        <div *ngIf="deposit.client_id.errors?.required"
+        <div *ngIf="client_id.errors?.required"
              class="alert alert-danger"
              role="alert"
         >
@@ -31,25 +31,146 @@
       </div>
 
       <div class="form-group">
-        <label>Вид депозита</label>
+        <label>Вид депозитной программы</label>
         <select name="deposit_type_id"
                 class="form-control"
                 required
-                #client_id="ngModel"
+                #deposit_type_id="ngModel"
                 [(ngModel)]="deposit.deposit_type_id"
+                (change)="depositTypeSelectHandle(deposit_type_id.value)"
         >
           <option *ngFor="let deposit_type of data.deposit_types"
-                  [value]="client.id"
+                  [value]="deposit_type.id"
           >{{ deposit_type.name }}</option>
         </select>
 
-        <div *ngIf="deposit.deposit_type_id.errors?.required" class="alert alert-danger"
+        <div *ngIf="deposit_type_id.errors?.required" class="alert alert-danger"
              role="alert"
         >
-          Необходимо ввести имя
+          Необходимо выбрать депозитную программу
         </div>
 
       </div>
+
+      <div class="form-group">
+        <label>Номер договора</label>
+        <input type="number"
+               name="document_number"
+               class="form-control"
+               [pattern]="NATURAL_NUMBERS_EXP"
+               required
+               #document_number="ngModel"
+               [(ngModel)]="deposit.number"
+        >
+
+        <div *ngIf="document_number.errors?.required"
+             class="alert alert-danger"
+             role="alert"
+        >
+          Необходимое поле
+        </div>
+        <div *ngIf="document_number.errors?.pattern"
+             class="alert alert-danger"
+             role="alert"
+        >
+          Неправильный номер договора
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Вид валюты</label>
+        <input name="currency_type"
+               type="string"
+               class="form-control"
+               required
+               [disabled]="true"
+               #currency_type="ngModel"
+               [(ngModel)]="deposit.currency_type"
+        />
+
+      </div>
+
+      <div class="form-group">
+        <label>Срок договора(мес.)</label>
+        <input type="number"
+               name="term_in_month"
+               class="form-control"
+               required
+               #term_in_month="ngModel"
+               [disabled]="true"
+               [(ngModel)]="deposit.term_in_month"
+        >
+
+      </div>
+
+      <div class="form-group">
+        <label>Дата начала депозитной програмымы</label>
+        <input type="date"
+               name="start_date"
+               class="form-control"
+               required
+               #start_date="ngModel"
+               [(ngModel)]="deposit.start_date"
+        >
+
+        <div *ngIf="start_date.invalid" class="alert alert-danger"
+             role="alert"
+        >
+          Неправильная дата
+        </div>
+      </div>
+
+        <div class="form-group">
+          <label>Дата окончания депозитной програмымы</label>
+          <input type="date"
+                 name="end_date"
+                 class="form-control"
+                 required
+                 #end_date="ngModel"
+                 [disabled]="true"
+                 [(ngModel)]="deposit.end_date"
+          >
+
+        </div>
+
+        <div *ngIf="selected_deposit_type">
+          От {{selected_deposit_type.min_contribution}}{{selected_deposit_type.currency_type}}
+        </div>
+        <div class="form-group">
+          <label>Сумма вклада</label>
+          <input type="number"
+                 name="start_balance"
+                 class="form-control"
+                 required
+                 [disabled]="!selected_deposit_type"
+                 [min]="selected_deposit_type && selected_deposit_type.min_contribution"
+                 #start_balance="ngModel"
+                 [(ngModel)]="deposit.start_balance"
+          >
+
+          <div *ngIf="start_balance.required" class="alert alert-danger"
+               role="alert"
+          >
+            Необходимо ввести начальный баланс
+          </div>
+          <div *ngIf="start_balance.min" class="alert alert-danger"
+               role="alert"
+          >
+            Начальный баланс должен быть не меньше указанной суммы
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Процент по вкладу</label>
+          <input type="number"
+                 name="interest_rate"
+                 class="form-control"
+                 required
+                 #interest_rate="ngModel"
+                 [disabled]="true"
+                 [(ngModel)]="deposit.interest_rate"
+          >
+        </div>
 
     </div>
 
@@ -58,6 +179,6 @@
   <button type="submit"
           class="btn btn-primary"
           [disabled]="!form.valid"
-  >{{client.id ? 'Обновить' : 'Создать'}}</button>
+  >Подтвердить</button>
 
 </form>
