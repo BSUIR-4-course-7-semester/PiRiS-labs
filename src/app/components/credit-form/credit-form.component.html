@@ -1,0 +1,69 @@
+<form #form="ngForm"
+      (submit)="handleSubmit()"
+      *ngIf="creditOrder"
+>
+
+  <h3>Кредит</h3>
+
+  <div class="row">
+
+    <div class="col-md-6">
+
+      <div class="form-group">
+        <label>Клиент</label>
+        <select name="client_id"
+                class="form-control"
+                required
+                #client_id="ngModel"
+                [(ngModel)]="creditOrder.client_id"
+        >
+          <option *ngFor="let client of clients"
+                  [value]="client.id"
+          >{{ client.fullname }} ({{ client.passport_series }} {{ client.passport_number }})</option>
+        </select>
+
+        <div *ngIf="client_id.errors?.required"
+             class="alert alert-danger"
+             role="alert"
+        >
+          Необходимое поле
+        </div>
+      </div>
+
+      <ng-container *ngIf="creditCondition">
+
+        <div class="form-group">
+          <label>Срок</label>
+          <select name="term"
+                  class="form-control"
+                  required
+                  #term="ngModel"
+                  [(ngModel)]="creditOrder.term"
+          >
+            <option *ngFor="let term of creditCondition.terms"
+                    [value]="term"
+            >{{ term }}</option>
+          </select>
+
+          <div *ngIf="term.errors?.required"
+               class="alert alert-danger"
+               role="alert"
+          >
+            Необходимое поле
+          </div>
+        </div>
+
+      </ng-container>
+
+    </div>
+
+  </div>
+
+  <button type="submit"
+          class="btn btn-primary"
+          [disabled]="!form.valid"
+  >Взять кредит</button>
+
+</form>
+
+

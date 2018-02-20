@@ -185,11 +185,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     disability_id: {
       type: DataTypes.INTEGER,  //  reference to disability table
-      allowNull: false,
-      defaultVaue: 0,
-      validate: {
-        isInt: true
-      },
+      allowNull: true,
     },
     pensioner: {
       type: DataTypes.BOOLEAN,

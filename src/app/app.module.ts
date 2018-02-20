@@ -10,10 +10,12 @@ import {FormsModule} from "@angular/forms";
 import {DataService} from "./services/data.service";
 import {RouterModule, Routes} from "@angular/router";
 import {ClientManagerComponent} from "./components/client-manager/client-manager.component";
+import {CreditFormComponent} from "./components/credit-form/credit-form.component";
 
 const appRoutes: Routes = [
   {path: '*', redirectTo: '/', pathMatch: 'full'},
   {path: 'clients', component: ClientManagerComponent},
+  {path: 'create-credit', component: CreditFormComponent},
 ];
 
 @NgModule({
@@ -22,6 +24,7 @@ const appRoutes: Routes = [
     ClientFormComponent,
     ClientListComponent,
     ClientManagerComponent,
+    CreditFormComponent,
   ],
   imports: [
     BrowserModule,
