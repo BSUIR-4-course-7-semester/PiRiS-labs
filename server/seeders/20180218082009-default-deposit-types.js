@@ -2,7 +2,7 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.bulkInsert('CurrencyType', [
+    return queryInterface.bulkInsert('DepositTypes', [
       { // belveb
         type: 'time',
         name: 'Выдатны',
@@ -47,6 +47,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.bulkDelete('DepositType', null, {});
+    return queryInterface.bulkDelete('DepositTypes', null, {});
   }
 };

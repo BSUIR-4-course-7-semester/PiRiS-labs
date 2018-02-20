@@ -55,4 +55,10 @@ export class DataService {
     //   .then(res => res.json())
     //   .then(clients => clients.map(c => Client.createFromServerResponse(c)));
   }
+
+  fetchDepositCondtions() {
+    return this.http.get('/api/deposit-conditions')
+      .toPromise()
+      .then(res => res.json());
+  }
 }

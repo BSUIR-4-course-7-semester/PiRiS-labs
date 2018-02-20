@@ -12,6 +12,59 @@ function handleError(err) {
   return result;
 }
 
+function createIndividualDepositAccounts(deposit) {
+  const balance = deposit.balance;
+  const clientId = deposit.client_id;
+  return Promise.all([
+    Models().Deposit.create(deposit),
+    Models().Account.create(
+      {
+        number: `3014${Math.random * 10000000}1`,
+        account_code: 3014,
+        activity: 'passive',
+        type: 'debit',
+        name: 'Текущий счет клиента',
+        currency_type: 'BYN',
+        balance: 0,
+        client_id: clientId
+      }),
+    Models().Account.create(
+      {
+        number: `3014${Math.random * 10000000}1`,
+        account_code: 3014,
+        activity: 'passive',
+        type: 'credit',
+        name: 'Текущий счет клиента',
+        currency_type: 'BYN',
+        balance: balance,
+        client_id: clientId
+      }),
+      Models().Account.create(
+       {
+         number: `3014${Math.random * 10000000}1`,
+         account_code: 3014,
+         activity: 'passive',
+         type: 'credit',
+         name: ' Процентный счет клиента',
+         currency_type: 'BYN',
+         balance: 0,
+         client_id: clientId
+       }),
+      Models().Account.create(
+       {
+         number: `3014${Math.random * 10000000}1`,
+         account_code: 3014,
+         activity: 'passive',
+         type: 'debit',
+         name: 'Процентный счет клиента',
+         currency_type: 'BYN',
+         balance: 0,
+         client_id: clientId
+       }),
+  ]);
+}
+
+
 module.exports = (router) => {
 
   router.get('/client', async (req, resp) => {
@@ -54,6 +107,29 @@ module.exports = (router) => {
       console.error(err);
       err = handleError(err);
       resp.status(400).send(err.message);
+    }
+  });
+
+  router.put('/deposit', async (req, res) => {
+    let deposit = req.body;
+    try {
+      const data = await createIndividualDepositAccounts(deposit);
+      res.json(data);
+    } catch(err) {
+      console.error(err);
+      err = handleError(err);
+      res.status(400).send(err.message);
+    }
+  });
+
+  router.get('/deposit-conditions', async (req, res) => {
+    try {
+      const data = await Models().DepositType.findAll();
+      res.json(data);
+    } catch(err) {
+      console.error(err);
+      err = handleError(err);
+      res.status(400).send(err.message);
     }
   });
 

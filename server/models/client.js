@@ -1,6 +1,7 @@
 const moment = require('moment');
 
-const forceDatabaseUpdate = !!process.env.FORCE_DB_UPDATE;
+const forceUpdate = require('../config/settings').database.forceUpdate;
+const forceDatabaseUpdate = forceUpdate || !!process.env.FORCE_DB_UPDATE;
 
 const NAME_REG_EXP = /^[А-Я][а-я]*$/;
 const PASSPORT_NUMBER_REG_EXP = /^\d{7}$/;

@@ -1,486 +1,54 @@
 <form #form="ngForm"
       (submit)="onSubmit($event, form)"
-      *ngIf="data && client"
+      *ngIf="data"
 >
 
-  <h3>Клиент</h3>
+  <h3>Депозит</h3>
 
   <div class="row">
 
     <div class="col-md-6">
 
       <div class="form-group">
-        <label>Фамилия</label>
-        <input type="text"
-               name="surname"
-               class="form-control"
-               required
-               [pattern]="NAME_REG_EXP"
-               #surname="ngModel"
-               [(ngModel)]="client.surname"
+        <label>Получатель депозита</label>
+        <select name="client_id"
+                class="form-control"
+                required
+                #client_id="ngModel"
+                [(ngModel)]="deposit.client_id"
         >
+          <option *ngFor="let client of clients"
+                  [value]="client.id"
+          >{{ client.first_name + client.surname + client.patronymic }}</option>
+        </select>
 
-        <div *ngIf="surname.errors?.required" class="alert alert-danger"
+        <div *ngIf="deposit.client_id.errors?.required"
+             class="alert alert-danger"
              role="alert"
         >
-          Необходимо ввести фамилию
-        </div>
-
-        <div *ngIf="surname.errors?.pattern" class="alert alert-danger"
-             role="alert"
-        >
-          Кириллицей
+          Необходимое поле
         </div>
       </div>
 
       <div class="form-group">
-        <label>Имя</label>
-        <input type="text"
-               name="first_name"
-               class="form-control"
-               required
-               [pattern]="NAME_REG_EXP"
-               #first_name="ngModel"
-               [(ngModel)]="client.first_name"
+        <label>Вид депозита</label>
+        <select name="deposit_type_id"
+                class="form-control"
+                required
+                #client_id="ngModel"
+                [(ngModel)]="deposit.deposit_type_id"
         >
+          <option *ngFor="let deposit_type of data.deposit_types"
+                  [value]="client.id"
+          >{{ deposit_type.name }}</option>
+        </select>
 
-        <div *ngIf="first_name.errors?.required" class="alert alert-danger"
+        <div *ngIf="deposit.deposit_type_id.errors?.required" class="alert alert-danger"
              role="alert"
         >
           Необходимо ввести имя
         </div>
 
-        <div *ngIf="first_name.errors?.pattern" class="alert alert-danger"
-             role="alert"
-        >
-          Кириллицей
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Отчество</label>
-        <input type="text"
-               name="patronymic"
-               class="form-control"
-               required
-               [pattern]="NAME_REG_EXP"
-               #patronymic="ngModel"
-               [(ngModel)]="client.patronymic"
-        >
-
-        <div *ngIf="patronymic.errors?.required" class="alert alert-danger"
-             role="alert"
-        >
-          Необходимо ввести отчество
-        </div>
-
-        <div *ngIf="patronymic.errors?.pattern" class="alert alert-danger"
-             role="alert"
-        >
-          Кириллицей
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Дата рождения</label>
-        <input type="date"
-               name="birth_date"
-               class="form-control"
-               required
-               #birth_date="ngModel"
-               [(ngModel)]="client.birth_date"
-        >
-
-        <div *ngIf="birth_date.invalid" class="alert alert-danger"
-             role="alert"
-        >
-          Неправильная дата рождения
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Серия паспорта</label>
-        <input type="text"
-               name="passport_series"
-               class="form-control"
-               required
-               minlength="2"
-               maxlength="2"
-               #passport_series="ngModel"
-               [(ngModel)]="client.passport_series"
-        >
-
-        <div *ngIf="(passport_series.errors?.required || passport_series.errors?.minlength || passport_series.errors?.maxlength)"
-             class="alert alert-danger"
-             role="alert"
-        >
-          Неправильная серия паспорта
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Номер паспорта</label>
-        <input type="text"
-               name="passport_number"
-               class="form-control"
-               required
-               [pattern]="PASSPORT_NUMBER_REG_EXP"
-               #passport_number="ngModel"
-               [(ngModel)]="client.passport_number"
-        >
-
-        <div *ngIf="(passport_number.errors?.required || passport_number.errors?.pattern)"
-             class="alert alert-danger"
-             role="alert"
-        >
-          Неправильный номер паспорта (7 цифр)
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Кем выдан паспорт</label>
-        <input type="text"
-               name="passport_reducer"
-               class="form-control"
-               required
-               #passport_reducer="ngModel"
-               [(ngModel)]="client.passport_reducer"
-        >
-
-        <div *ngIf="passport_reducer.errors?.required"
-             class="alert alert-danger"
-             role="alert"
-        >
-          Необходимое поле
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Когда выдан</label>
-        <input type="date"
-               name="passport_reducing_date"
-               class="form-control"
-               required
-               #passport_reducing_date="ngModel"
-               [(ngModel)]="client.passport_reducing_date"
-        >
-
-        <div *ngIf="birth_date.invalid" class="alert alert-danger"
-             role="alert"
-        >
-          Неправильная дата выдачи паспорта
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Идентификационный номер</label>
-        <input type="text"
-               name="identification_number"
-               class="form-control"
-               required
-               [pattern]="IDENTIFICATION_NUMBER_REG_EXP"
-               #identification_number="ngModel"
-               [(ngModel)]="client.identification_number"
-        >
-
-        <div *ngIf="identification_number.errors?.required"
-             class="alert alert-danger"
-             role="alert"
-        >
-          Необходимое поле
-        </div>
-        <div *ngIf="identification_number.errors?.pattern"
-             class="alert alert-danger"
-             role="alert"
-        >
-          Неправильный идентификационный номер
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Место рождения</label>
-        <input type="text"
-               name="birth_place"
-               class="form-control"
-               required
-               #birth_place="ngModel"
-               [(ngModel)]="client.birth_place"
-        >
-
-        <div *ngIf="birth_place.errors?.required"
-             class="alert alert-danger"
-             role="alert"
-        >
-          Необходимое поле
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Фактический город проживания</label>
-        <select name="actual_residence_city_id"
-                class="form-control"
-                required
-                #actual_residence_city_id="ngModel"
-                [(ngModel)]="client.actual_residence_city_id"
-        >
-          <option *ngFor="let status of data.cities"
-                  [value]="status.id"
-          >{{ status.title }}</option>
-        </select>
-
-        <div *ngIf="actual_residence_city_id.errors?.required"
-             class="alert alert-danger"
-             role="alert"
-        >
-          Необходимое поле
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Фактический адрес проживания</label>
-        <input type="text"
-               name="actual_address"
-               class="form-control"
-               required
-               #actual_address="ngModel"
-               [(ngModel)]="client.actual_address"
-        >
-
-        <div *ngIf="actual_address.errors?.required"
-             class="alert alert-danger"
-             role="alert"
-        >
-          Необходимое поле
-        </div>
-      </div>
-
-    </div>
-
-    <div class="col-md-6">
-
-      <div class="form-group">
-        <label>Домашний телефон</label>
-        <input type="text"
-               name="home_tel_number"
-               class="form-control"
-               [pattern]="HOME_TEL_REG_EXP"
-               #home_tel_number="ngModel"
-               [(ngModel)]="client.home_tel_number"
-        >
-
-        <div *ngIf="home_tel_number.errors?.pattern"
-             class="alert alert-danger"
-             role="alert"
-        >
-          Неправильный номер (`80` и 10 цифр)
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Мобильный телефон</label>
-        <input type="text"
-               name="mobile_tel_number"
-               class="form-control"
-               [pattern]="MOBILE_TEL_REG_EXP"
-               #mobile_tel_number="ngModel"
-               [(ngModel)]="client.mobile_tel_number"
-        >
-
-        <div *ngIf="mobile_tel_number.errors?.pattern"
-             class="alert alert-danger"
-             role="alert"
-        >
-          Неправильный номер (`+375` и 9 цифр)
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Электронная почта</label>
-        <input type="text"
-               name="email"
-               class="form-control"
-               required
-               [pattern]="EMAIL_REG_EXP"
-               #email="ngModel"
-               [(ngModel)]="client.email"
-        >
-
-        <div *ngIf="email.errors?.pattern"
-             class="alert alert-danger"
-             role="alert"
-        >
-          Неправильная почта
-        </div>
-
-        <div *ngIf="email.errors?.required"
-             class="alert alert-danger"
-             role="alert"
-        >
-          Необходимое поле
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Место работы</label>
-        <input type="text"
-               name="job_place"
-               class="form-control"
-               required
-               #job_place="ngModel"
-               [(ngModel)]="client.job_place"
-        >
-
-        <div *ngIf="job_place.errors?.required"
-             class="alert alert-danger"
-             role="alert"
-        >
-          Необходимое поле
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Должность</label>
-        <input type="text"
-               name="job_position"
-               class="form-control"
-               required
-               #job_position="ngModel"
-               [(ngModel)]="client.job_position"
-        >
-
-        <div *ngIf="job_position.errors?.required"
-             class="alert alert-danger"
-             role="alert"
-        >
-          Необходимое поле
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Город регистрации</label>
-        <select name="registration_city_id"
-                class="form-control"
-                required
-                #registration_city_id="ngModel"
-                [(ngModel)]="client.registration_city_id"
-        >
-          <option *ngFor="let status of data.cities"
-                  [value]="status.id"
-          >{{ status.title }}</option>
-        </select>
-
-        <div *ngIf="registration_city_id.errors?.required"
-             class="alert alert-danger"
-             role="alert"
-        >
-          Необходимое поле
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Адрес регистрации</label>
-        <input type="text"
-               name="registration_address"
-               class="form-control"
-               required
-               #registration_address="ngModel"
-               [(ngModel)]="client.registration_address"
-        >
-
-        <div *ngIf="registration_address.errors?.required"
-             class="alert alert-danger"
-             role="alert"
-        >
-          Необходимое поле
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Семейное положение</label>
-        <select name="marital_status_id"
-                class="form-control"
-                required
-                #marital_status_id="ngModel"
-                [(ngModel)]="client.marital_status_id"
-        >
-          <option *ngFor="let status of data.maritalStatuses"
-                  [value]="status.id"
-          >{{ status.title }}</option>
-        </select>
-
-        <div *ngIf="marital_status_id.errors?.required"
-             class="alert alert-danger"
-             role="alert"
-        >
-          Необходимое поле
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Национальность</label>
-        <select name="nationality_id"
-                class="form-control"
-                required
-                #nationality_id="ngModel"
-                [(ngModel)]="client.nationality_id"
-        >
-          <option *ngFor="let status of data.nationalities"
-                  [value]="status.id"
-          >{{ status.title }}</option>
-        </select>
-
-        <div *ngIf="nationality_id.errors?.required"
-             class="alert alert-danger"
-             role="alert"
-        >
-          Необходимое поле
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Инвалидность</label>
-        <select name="disability_id"
-                class="form-control"
-                #disability_id="ngModel"
-                [(ngModel)]="client.disability_id"
-        >
-          <option value="0">Нет</option>
-          <option *ngFor="let status of data.disabilities"
-                  [value]="status.id"
-          >{{ status.title }}</option>
-        </select>
-      </div>
-
-      <div class="form-check">
-        <label class="form-check-label">
-          <input type="checkbox"
-                 class="form-check-input"
-                 name="pensioner"
-                 #pensioner="ngModel"
-                 [(ngModel)]="client.pensioner"
-          >
-          Пенсионер
-        </label>
-      </div>
-
-      <div class="form-group">
-        <label>Месячный доход</label>
-        <input type="number"
-               min="0.00"
-               max="100000.00"
-               step="0.01"
-               name="monthly_revenue"
-               class="form-control"
-               #monthly_revenue="ngModel"
-               [(ngModel)]="client.monthly_revenue"
-        >
-
-        <div *ngIf="monthly_revenue.errors?.invalid"
-             class="alert alert-danger"
-             role="alert"
-        >
-          Неправильное значение
-        </div>
       </div>
 
     </div>

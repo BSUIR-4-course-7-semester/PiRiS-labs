@@ -1,0 +1,19 @@
+<client-list [clients]="clients"
+             [selected]="client"
+             (select)="handleSelect($event)"
+             (delete)="handleDelete($event)"
+></client-list>
+<hr>
+<button class="btn btn-default"
+        (click)="createNewClient()"
+>Новый</button>
+<hr>
+<div *ngIf="message" class="alert alert-danger"
+     role="alert"
+>
+  {{message}}
+</div>
+<client-form [client]="client"
+             (ready)="handleSubmit($event)"
+></client-form>
+

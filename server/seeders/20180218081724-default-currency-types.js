@@ -2,7 +2,7 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.bulkInsert('CurrencyType', [
+    return queryInterface.bulkInsert('CurrencyTypes', [
       {
         name: 'BYN',
       },{
@@ -14,6 +14,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.bulkDelete('CurrencyType', null, {});
+    return queryInterface.bulkDelete('CurrencyTypes', null, {});
   }
 };

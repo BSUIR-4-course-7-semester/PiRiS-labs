@@ -1,4 +1,5 @@
-const forceDatabaseUpdate = !!process.env.FORCE_DB_UPDATE;
+const forceUpdate = require('../config/settings').database.forceUpdate;
+const forceDatabaseUpdate = forceUpdate || !!process.env.FORCE_DB_UPDATE;
 
 module.exports = (sequelize, DataTypes) => {
   const Disability = sequelize.define('Disability', {

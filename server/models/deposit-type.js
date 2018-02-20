@@ -1,4 +1,5 @@
-const forceDatabaseUpdate = !!process.env.FORCE_DB_UPDATE;
+const forceUpdate = require('../config/settings').database.forceUpdate;
+const forceDatabaseUpdate = forceUpdate || !!process.env.FORCE_DB_UPDATE;
 
 module.exports = (sequelize, DataTypes) => {
   const DepositType = sequelize.define('DepositType', {
@@ -9,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     type: {
-      type: DataTypes.ENUM('call', 'time'),
+      type: DataTypes.ENUM(['call', 'time']),
     },
     name: {
       type: DataTypes.STRING,
@@ -24,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     //   type: DataTypes.ENUM()
     // }
     payment: {
-      type: DataTypes.ENUM('monthly', 'capitalization'),
+      type: DataTypes.ENUM(['monthly', 'capitalization']),
     },
     early_repayment: {
       type: DataTypes.BOOLEAN
@@ -33,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
     },
     min_contribution: {
-      type: DataTypes.DOUBLE,
+      type: DataTypes.DECIMAL(10, 2),
     }
   }, {
     timestamps: false
