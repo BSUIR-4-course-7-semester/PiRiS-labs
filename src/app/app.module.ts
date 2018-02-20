@@ -12,6 +12,14 @@ import {RouterModule, Routes} from "@angular/router";
 import {ClientManagerComponent} from "./components/client-manager/client-manager.component";
 import {DepositFormComponent} from "./components/deposit-form/deposit-form.component";
 import {CreditFormComponent} from "./components/credit-form/credit-form.component";
+import {MinValueValidatorDirective, MaxValueValidatorDirective} from "./components/directives/min-value.directive";
+
+import * as FusionCharts from 'fusioncharts';
+import * as Charts from 'fusioncharts/fusioncharts.charts';
+import * as FintTheme from 'fusioncharts/themes/fusioncharts.theme.fint';
+import { FusionChartsModule } from 'angular4-fusioncharts';
+
+FusionChartsModule.fcRoot(FusionCharts, Charts, FintTheme);
 
 const appRoutes: Routes = [
   {path: '*', redirectTo: '/', pathMatch: 'full'},
@@ -28,10 +36,13 @@ const appRoutes: Routes = [
     ClientManagerComponent,
     DepositFormComponent,
     CreditFormComponent,
+    MinValueValidatorDirective,
+    MaxValueValidatorDirective,
   ],
   imports: [
     BrowserModule,
     HttpModule,
+    FusionChartsModule,
     FormsModule,
     RouterModule.forRoot(appRoutes),
   ],
