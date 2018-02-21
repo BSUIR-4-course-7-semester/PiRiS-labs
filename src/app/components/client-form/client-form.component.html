@@ -357,6 +357,27 @@
       </div>
 
       <div class="form-group">
+        <label>Город регистрации</label>
+        <select name="registration_city_id"
+                class="form-control"
+                required
+                #registration_city_id="ngModel"
+                [(ngModel)]="client.registration_city_id"
+        >
+          <option *ngFor="let status of data.cities"
+                  [value]="status.id"
+          >{{ status.title }}</option>
+        </select>
+
+        <div *ngIf="registration_city_id.errors?.required"
+             class="alert alert-danger"
+             role="alert"
+        >
+          Необходимое поле
+        </div>
+      </div>
+
+      <div class="form-group">
         <label>Адрес регистрации</label>
         <input type="text"
                name="registration_address"

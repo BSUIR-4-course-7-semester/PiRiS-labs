@@ -1,6 +1,7 @@
 const moment = require('moment');
 
-const forceDatabaseUpdate = !!process.env.FORCE_DB_UPDATE;
+const forceUpdate = require('../config/settings').database.forceUpdate;
+const forceDatabaseUpdate = forceUpdate || !!process.env.FORCE_DB_UPDATE;
 
 const NAME_REG_EXP = /^[А-Я][а-я]*$/;
 const PASSPORT_NUMBER_REG_EXP = /^\d{7}$/;
@@ -161,6 +162,13 @@ module.exports = (sequelize, DataTypes) => {
         len: [0, 100]
       },
     },
+    registration_city_id: {
+      type: DataTypes.INTEGER,  //  reference to city table
+      allowNull: false,
+      validate: {
+        isInt: true,
+      },
+    },
     registration_address: {
       type: DataTypes.STRING(300),
       allowNull: false,
@@ -229,6 +237,10 @@ module.exports = (sequelize, DataTypes) => {
     this.belongsTo(models['MaritalStatus'], {
       foreignKey: 'marital_status_id',
       as: 'marital_status'
+    });
+    this.belongsTo(models['City'], {
+      foreignKey: 'registration_city_id',
+      as: 'registration_city'
     });
     this.belongsTo(models['City'], {
       foreignKey: 'actual_residence_city_id',

@@ -1,0 +1,30 @@
+<h3>Список счетов</h3>
+
+<ul class="list-group account-list">
+  <li *ngFor="let account of accounts"
+      class="list-group-item w-100 d-flex justify-content-between"
+  >
+    <div>
+      <div>{{account.name}} №{{account.number}}
+        <b>{{account.type === 'credit' ? 'Кредит' : 'Дебет'}}</b>
+        <b>{{account.activity === 'active' ? 'Актив' : 'Пассив'}}</b></div>
+      <div *ngIf="account.client">
+        {{account.client.surname}} {{account.client.first_name}} {{account.client.patronymic}}
+      </div>
+      <div>Состояние счета: {{account.balance}} {{account.currency_type}}</div>
+    </div>
+  </li>
+</ul>
+
+<div *ngIf="!accounts || !accounts.length"
+     class="alert alert-info"
+     role="alert"
+>
+  Нет cчетов
+</div>
+
+<button type="submit"
+        class="btn btn-primary"
+        (click)="finishDay()"
+>Закончить банковский день</button>
+

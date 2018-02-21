@@ -2,18 +2,20 @@ const forceUpdate = require('../config/settings').database.forceUpdate;
 const forceDatabaseUpdate = forceUpdate || !!process.env.FORCE_DB_UPDATE;
 
 module.exports = (sequelize, DataTypes) => {
-  const Nationality = sequelize.define('Nationality', {
+  const CurrencyType = sequelize.define('CurrencyType', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
       allowNull: false,
     },
-    title: DataTypes.STRING
+    name: {
+      type: DataTypes.STRING,
+    }
   }, {
     timestamps: false
   });
 
-  return Nationality.sync({ force: forceDatabaseUpdate })
-  .then(() => Nationality);
+  return CurrencyType.sync({ force: forceDatabaseUpdate })
+  .then(() => CurrencyType);
 };

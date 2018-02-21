@@ -17,6 +17,7 @@ export class Client {
   email: string;
   job_place: string;
   job_position: string;
+  registration_city_id: string;
   registration_address: string;
   marital_status_id: number;
   nationality_id: number;
@@ -45,6 +46,7 @@ export class Client {
     result.email = data.email;
     result.job_place = data.job_place;
     result.job_position = data.job_position;
+    result.registration_city_id = data.registration_city_id;
     result.registration_address = data.registration_address;
     result.marital_status_id = data.marital_status_id;
     result.nationality_id = data.nationality_id;

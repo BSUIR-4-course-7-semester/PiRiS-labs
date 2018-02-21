@@ -2,6 +2,8 @@ import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
 import {Client} from '../entities/client';
 import {Credit} from '../entities/credit';
+import {Deposit} from "../entities/deposit";
+import {CreditOrder} from "../entities/credit-order";
 
 @Injectable()
 export class DataService {
@@ -47,5 +49,35 @@ export class DataService {
     .toPromise()
     .then(res => res.json())
     .then(creditConditions => creditConditions.map(c => Credit.createFromServerResponse(c)));
+  }
+
+  fetchDepositConditions() {
+    return this.http.get('/api/deposit-conditions')
+      .toPromise()
+      .then(res => res.json());
+  }
+
+  createDeposit(deposit: Deposit) {
+    return this.http.post('api/deposit', deposit)
+    .toPromise()
+    .then(res => res.json());
+  }
+
+  createCredit(credit: CreditOrder) {
+    return this.http.post('api/credit', credit)
+      .toPromise()
+      .then(res => res.json());
+  }
+
+  fetchAccounts() {
+    return this.http.get('/api/accounts')
+      .toPromise()
+      .then(res => res.json());
+  }
+
+  finishBankDay() {
+    return this.http.get('/api/finish')
+      .toPromise()
+      .then(res => res.json());
   }
 }

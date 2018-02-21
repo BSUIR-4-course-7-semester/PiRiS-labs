@@ -1,0 +1,9 @@
+.alert {
+  margin: 2px 0;
+  padding: 1px 3px;
+  font-size: small;
+}
+
+form {
+  padding: 5px;
+}
