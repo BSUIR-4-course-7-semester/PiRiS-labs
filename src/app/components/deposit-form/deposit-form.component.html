@@ -104,12 +104,13 @@
       </div>
 
       <div class="form-group">
-        <label>Дата начала депозитной програмымы</label>
+        <label>Дата начала депозитной програмы</label>
         <input type="date"
                name="start_date"
                class="form-control"
                required
                #start_date="ngModel"
+               [disabled]="true"
                [(ngModel)]="deposit.start_date"
         >
 
@@ -143,7 +144,8 @@
                  class="form-control"
                  required
                  [disabled]="!selected_deposit_type"
-                 [min]="selected_deposit_type && selected_deposit_type.min_contribution"
+                 [minValue]="selected_deposit_type && selected_deposit_type.min_contribution"
+                 [maxValue]="10000"
                  #start_balance="ngModel"
                  [(ngModel)]="deposit.start_balance"
           >
@@ -153,10 +155,15 @@
           >
             Необходимо ввести начальный баланс
           </div>
-          <div *ngIf="start_balance.min" class="alert alert-danger"
+          <div *ngIf="start_balance.errors?.minValue" class="alert alert-danger"
                role="alert"
           >
             Начальный баланс должен быть не меньше указанной суммы
+          </div>
+          <div *ngIf="start_balance.errors?.maxValue" class="alert alert-danger"
+               role="alert"
+          >
+            Начальный баланс не должен превышать ВВП Беларуси
           </div>
         </div>
 

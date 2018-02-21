@@ -2,6 +2,8 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {Client} from '../../entities/client';
 import {DataService} from '../../services/data.service';
 import {Deposit} from "../../entities/deposit";
+import {formatDate, today} from "../../components/constants";
+import moment = require("moment");
 
 @Component({
   selector: 'deposit-form',
@@ -18,6 +20,8 @@ export class DepositFormComponent {
 
   constructor(private dataService: DataService) {
     this.deposit = new Deposit();
+    this.deposit.start_date =  formatDate(today());
+    this.deposit.end_date = formatDate(today());
 
     Promise.all([
       this.dataService.fetchDepositConditions()
@@ -31,6 +35,8 @@ export class DepositFormComponent {
     this.selected_deposit_type = this.data.deposit_types
       .find(type => type.id === parseInt(deposit_type_id, 10));
 
+    this.deposit.end_date = formatDate(moment(this.deposit.start_date)
+      .add(this.selected_deposit_type.term_in_month, 'month'));
     this.deposit.interest_rate = this.selected_deposit_type.interest_rate;
     this.deposit.term_in_month = this.selected_deposit_type.term_in_month;
     this.deposit.currency_type = this.selected_deposit_type.currency_type;

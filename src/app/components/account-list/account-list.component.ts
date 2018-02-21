@@ -6,11 +6,11 @@ import {formatDate, today} from "../../components/constants";
 import moment = require("moment");
 
 @Component({
-  selector: 'deposit-form',
-  templateUrl: './deposit-form.component.html',
-  styleUrls: ['./deposit-form.component.css']
+  selector: 'account-list',
+  templateUrl: './account-list.component.html',
+  styleUrls: ['./account-list.component.css']
 })
-export class DepositFormComponent {
+export class AccountListComponent {
 
   accounts: Account[];
 

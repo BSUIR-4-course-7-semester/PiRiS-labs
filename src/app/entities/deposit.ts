@@ -3,8 +3,8 @@ export class Deposit {
   deposit_type_id: number;
   number: number;
   currency_type: string;
-  start_date: Date;
-  end_date: Date;
+  start_date: string;
+  end_date: string;
   term_in_month: number;
   start_balance: number;
   interest_rate: number;

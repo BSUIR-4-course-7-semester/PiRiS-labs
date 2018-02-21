@@ -67,7 +67,7 @@ export class CreditFormComponent {
   }
 
   handleSubmit() {
-    console.log(this.creditOrder);
+    this.dataService.createCredit(this.creditOrder);
   }
 
   handleCreditTermChange(ev) {

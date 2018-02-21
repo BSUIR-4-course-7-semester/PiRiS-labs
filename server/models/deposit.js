@@ -36,6 +36,23 @@ module.exports = (sequelize, DataTypes) => {
     client_id: {
       type: DataTypes.INTEGER, // Reference to clients
       allowNull: true, // if null -> bank account
+    },
+
+    account_current_credit_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    account_current_debet_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    account_percent_credit_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    account_percent_debet_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     }
   }, {
    timestamps: false
@@ -49,6 +66,23 @@ module.exports = (sequelize, DataTypes) => {
     this.belongsTo(models['Client'], {
       foreignKey: 'client_id',
       as: 'client'
+    });
+
+    this.belongsTo(models['Account'], {
+      foreignKey: 'account_current_credit_id',
+      as: 'account_current_credit'
+    });
+    this.belongsTo(models['CreditOrder'], {
+      foreignKey: 'account_current_debet_id',
+      as: 'account_current_debet'
+    });
+    this.belongsTo(models['CreditOrder'], {
+      foreignKey: 'account_percent_credit_id',
+      as: 'account_percent_credit'
+    });
+    this.belongsTo(models['CreditOrder'], {
+      foreignKey: 'account_percent_debet_id',
+      as: 'account_percent_debet'
     });
   };
 
