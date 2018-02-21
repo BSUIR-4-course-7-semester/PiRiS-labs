@@ -1,0 +1,12 @@
+.account-list {
+  margin: 5px;
+}
+
+.account-list li {
+  cursor: pointer;
+}
+
+.account-list li:hover {
+  background-color: #ddd;
+  border-color: #ddd;
+}

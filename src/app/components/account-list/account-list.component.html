@@ -1,0 +1,21 @@
+<h3>Список счетов</h3>
+
+<ul class="list-group account-list">
+  <li *ngFor="let c of clients"
+      class="list-group-item w-100 d-flex justify-content-between"
+      [class.active]="selected && selected.id == c.id"
+      (click)="selectClient(c)"
+  >
+    {{c.surname}} {{c.first_name}} {{c.patronymic}}
+    <span class="delete-btn" (click)="deleteClient(c)"
+    >Удалить</span>
+  </li>
+</ul>
+
+<div *ngIf="!clients || !clients.length"
+     class="alert alert-info"
+     role="alert"
+>
+  Нет клиентов
+</div>
+
