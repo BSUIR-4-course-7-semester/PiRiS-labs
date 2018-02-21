@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import {Client} from "../../entities/client";
 import {DataService} from "../../services/data.service";
+import * as _ from 'lodash';
 
 @Component({
   selector: 'client-manager',
@@ -31,7 +32,9 @@ export class ClientManagerComponent {
   constructor(private dataService: DataService) {
     this.dataService.fetchClients()
     .then(data => {
-      this.clients = data;
+      this.clients = _.sortBy(data, a => {
+        return a.surname;
+      });
     });
   }
 
