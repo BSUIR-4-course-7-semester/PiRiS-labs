@@ -20,7 +20,7 @@ const database = new Sequelize(settings.database.name, settings.database.usernam
     collate: 'utf8_general_ci',
   },
   benchmark: true,
-  logging: console.log
+  logging: false
 });
 
 module.exports = database;

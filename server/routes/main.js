@@ -163,7 +163,7 @@ async function moveCreditToCash(cash, credit) {
   return Promise.all([
     credit.debet.update(),
     credit.account_current_credit.update(),
-                     ]);
+  ]);
 }
 
 async function payCreditPercentToBank(today, bank, cash, credit) {
