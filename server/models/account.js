@@ -45,6 +45,26 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
+  Account.findBankAccounts = async function() {
+    const bankAccounts = await Account.findAll({ where: { client_id: null }});
+    return {
+      bank: {
+        credit: bankAccounts.find(acc => acc.type === 'credit' && acc.account_code === '7327'),
+        debit: bankAccounts.find(acc => acc.type === 'debit' && acc.account_code === '7327'),
+      },
+      cashDesk: {
+        credit: bankAccounts.find(acc => acc.type === 'credit' && acc.account_code === '1010'),
+        debit: bankAccounts.find(acc => acc.type === 'debit' && acc.account_code === '1010'),
+      }
+    };
+  };
+
+  Account.prototype.plus = function(amount) {
+    this.balance = parseFloat(this.balance) + amount;
+    //console.log("+", this.balance, ": ", typeof this.balance);
+    return this.save();
+  };
+
   return Account.sync({ force: forceDatabaseUpdate })
   .then(() => Account);
 };

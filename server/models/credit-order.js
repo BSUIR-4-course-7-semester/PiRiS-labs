@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    account_current_debet_id: {
+    account_current_debit_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
@@ -50,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    account_percent_debet_id: {
+    account_percent_debit_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
     }
@@ -73,16 +73,16 @@ module.exports = (sequelize, DataTypes) => {
       as: 'account_current_credit'
     });
     this.belongsTo(models['Account'], {
-      foreignKey: 'account_current_debet_id',
-      as: 'account_current_debet'
+      foreignKey: 'account_current_debit_id',
+      as: 'account_current_debit'
     });
     this.belongsTo(models['Account'], {
       foreignKey: 'account_percent_credit_id',
       as: 'account_percent_credit'
     });
     this.belongsTo(models['Account'], {
-      foreignKey: 'account_percent_debet_id',
-      as: 'account_percent_debet'
+      foreignKey: 'account_percent_debit_id',
+      as: 'account_percent_debit'
     });
   };
 

@@ -10,7 +10,7 @@ module.exports = {
         type: 'debit',
         name: 'Фонд развития банка',
         currency_type: 'BYN',
-        balance: 10000000,
+        balance: 0,
       },
       {
         number: '7327000000011',
@@ -19,7 +19,7 @@ module.exports = {
         type: 'credit',
         name: 'Фонд развития банка',
         currency_type: 'BYN',
-        balance: 0,
+        balance: 10000000,
       },
       {
         number: '1010000000001',

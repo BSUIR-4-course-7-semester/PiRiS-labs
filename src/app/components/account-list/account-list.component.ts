@@ -15,12 +15,17 @@ export class AccountListComponent {
   accounts: Account[];
 
   constructor(private dataService: DataService) {
+    this.loadAccounts();
+  }
+
+  loadAccounts() {
     this.dataService.fetchAccounts()
-    .then(data => this.accounts = data);
+      .then(data => this.accounts = data);
   }
 
   finishDay() {
-    return this.dataService.finishBankDay();
+    return this.dataService.finishBankDay()
+      .then(() => this.loadAccounts());
   }
 
 }

@@ -1,5 +1,6 @@
 const Models = require('../models/index');
 const moment = require('moment');
+const Promise = require('bluebird');
 
 const ERROR_MESSAGE = {
   'SequelizeUniqueConstraintError': 'Клиент с такими данными существует',
@@ -13,32 +14,56 @@ function handleError(err) {
   return result;
 }
 
-async function finishDay() {
-  const today = moment();
-  const accounts = Accounts.findAll({ where: { client_id: null }});
-  const bank = {
-    credit: accounts.filter(account => account.type === 'credit' && account.code === 7327),
-    debet: accounts.filter(account => account.type === 'debet' && account.code === 7327),
-  };
-  const cash = {
-    credit: accounts.filter(account => account.type === 'credit' && account.code === 1010),
-    debet: accounts.filter(account => account.type === 'debet' && account.code === 1010),
-  };
+async function finishMonthForDeposits(bankAccounts) {
+  const deposits = await Models().Deposit.findActiveDeposits();
 
-  const deposits = payDeposit(today, bank, cash);
-  const credits = payCredit(today, bank, cash);
+  return Promise.all(deposits.map(async deposit => {
+    const monthPercents = deposit.start_balance * deposit.interest_rate / 12 / 100;
+    return Promise.all([
+      deposit.incPassedMonth(),
+      bankAccounts.cashDesk.debit.plus(monthPercents),
+      bankAccounts.bank.debit.plus(monthPercents),
+      deposit.account_percent_credit.plus(monthPercents),
+      deposit.account_percent_debit.plus(monthPercents)
+    ])
+      .then(_ => {
+        console.log(deposit.month_passed)
+        console.log(deposit.term_in_month)
+        if(deposit.month_passed === deposit.term_in_month) {
+          console.log('test')
+          return Promise.all([
+            deposit.account_current_debit.plus(deposit.start_balance),
+            deposit.account_current_credit.plus(deposit.start_balance),
+            bankAccounts.bank.debit.plus(deposit.start_balance),
+            bankAccounts.cashDesk.debit.plus(deposit.start_balance),
+          ]);
+        }
+
+        return _;
+      });
+  }));
+}
+
+async function finishMonth() {
+  const today = moment();
+  const bankAccounts = await Models().Account.findBankAccounts();
+
+  return Promise.all([
+    finishMonthForDeposits(bankAccounts),
+    // payCredit(today, accounts.bank, accounts.cashDesk)
+  ]);
 }
 
 async function sendMoneyToBank(bank, deposit) {
-  if (deposit.account_current_credit.balance > deposit.account_current_debet.balance) {
+  if (deposit.account_current_credit.balance > deposit.account_current_debit.balance) {
 
     bank.credit.balance = bank.credit.balance +
-      deposit.account_current_credit.balance - deposit.account_current_debet.balance;
-    deposit.account_current_debet.balance = deposit.account_current_credit.balance;
+      deposit.account_current_credit.balance - deposit.account_current_debit.balance;
+    deposit.account_current_debit.balance = deposit.account_current_credit.balance;
 
     return Promise.all([
       bank.credit.update(),
-      deposit.account_current_debet.update()
+      deposit.account_current_debit.update()
     ]);
   } else {
     return Promise.resolve();
@@ -79,11 +104,11 @@ async function sendPercent(today, bank, deposit) {
    if (isReadyForMonthPercent(today, deposit)) {
      const percent = getDepositPercent(deposit, 1);
      deposit.account_percent_credit.balance += percent;
-     bank.debet.balance -= percent;
+     bank.debit.balance -= percent;
 
      return Promise.all([
        deposit.account_percent_credit.update(),
-       bank.debet.update(),
+       bank.debit.update(),
      ]);
    }
 
@@ -94,7 +119,7 @@ async function sendPercent(today, bank, deposit) {
 
       return Promise.all([
         deposit.account_percent_credit.update(),
-        bank.debet.update(),
+        bank.debit.update(),
       ]);
     }
   }
@@ -103,13 +128,13 @@ async function sendPercent(today, bank, deposit) {
 }
 
 async function payBackDepositPercentToCash(cash, deposit) {
-  if (deposit.account_percent_credit.balance > deposit.account_percent_debet.balance) {
-    cash.debet.balance = deposit.account_percent_credit.balance - deposit.account_percent_debet.balance;
-    deposit.account_percent_debet.balance = deposit.account_percent_credit.balance;
+  if (deposit.account_percent_credit.balance > deposit.account_percent_debit.balance) {
+    cash.debit.balance = deposit.account_percent_credit.balance - deposit.account_percent_debit.balance;
+    deposit.account_percent_debit.balance = deposit.account_percent_credit.balance;
 
     return Promise.all([
-                         deposit.account_percent_debet.update(),
-                         cash.debet.update(),
+                         deposit.account_percent_debit.update(),
+                         cash.debit.update(),
                        ]);
   }
   return Promise.resolve();
@@ -131,37 +156,22 @@ async function payBackDeposit(today, cash, deposit) {
 }
 
 function clearCash(cash) {
-  if (cash.credit.balance > cash.debet.balance) {
-    cash.debet.balance = cash.credit.balance;
-    return cash.debet.update();
+  if (cash.credit.balance > cash.debit.balance) {
+    cash.debit.balance = cash.credit.balance;
+    return cash.debit.update();
 
   } else {
-    cash.credit.balance = cash.debet.balance;
+    cash.credit.balance = cash.debit.balance;
     return cash.credit.update();
   }
 }
 
-// TODO => close accounts
-async function payDeposit(today, bank, cash) {
-  const deposits = Models().Deposit.findAll({ include: [{ all: true }] });
-
-  return Promise.all(
-    deposits.map(deposit => {
-      return clearCash()
-      .then(() => sendMoneyToBank(bank, deposit))
-      .then(() => sendPercent(today, bank, deposit))
-      .then(() => payBackDeposit(today, cash, deposit));
-    })
-  );
-}
-
-// TODO => remove babos iz banka pered vidachey
 async function moveCreditToCash(cash, credit) {
-  cash.debet += credit.account_current_debet.balance;
-  credit.account_current_credit.balance -= credit.account_current_debet.balance;
+  cash.debit += credit.account_current_debit.balance;
+  credit.account_current_credit.balance -= credit.account_current_debit.balance;
 
   return Promise.all([
-    credit.debet.update(),
+    credit.debit.update(),
     credit.account_current_credit.update(),
   ]);
 }
@@ -171,9 +181,9 @@ async function payCreditPercentToBank(today, bank, cash, credit) {
     if (isReadyForMonthPercent(today, credit)) {
       const percent = credit.account_current_credit.balance * credit.interest_rate / 12;
       bank.credit.balance += percent;
-      cash.debet.balance += percent;
+      cash.debit.balance += percent;
       cash.credit.balance += percent;
-      credit.account_current_debet.balance += percent;
+      credit.account_current_debit.balance += percent;
     }
   }
 }
@@ -191,6 +201,7 @@ async function payCredit(today, bank) {
   );
 }
 
+// TODO(nastya) => need to fix
 function createIndividualCreditAccounts(credit) {
   const balance = credit.amount;
   const clientId = credit.client_id;
@@ -243,10 +254,10 @@ function createIndividualCreditAccounts(credit) {
      }),
   ])
     .then((res) => {
-      credit.account_current_debet_id  = res[0].id;
+      credit.account_current_debit_id  = res[0].id;
       credit.account_current_credit_id = res[1].id;
       credit.account_percent_credit_id = res[2].id;
-      credit.account_percent_debet_id  = res[3].id;
+      credit.account_percent_debit_id  = res[3].id;
       console.log(credit);
       return Models().Credit.create(credit)
     });
@@ -257,58 +268,61 @@ function createIndividualDepositAccounts(deposit) {
   const clientId = deposit.client_id;
   const random = () => Math.round(Math.random() * 10000000);
   return Promise.all([
-    Models().Account.create(
-      {
-        number: `3014${random()}1`,
-        account_code: 3014,
-        activity: 'passive',
-        type: 'debit',
-        name: 'Текущий счет клиента',
-        currency_type: 'BYN',
-        balance: 0,
-        client_id: clientId
-      }),
-    Models().Account.create(
-      {
-        number: `3014${random()}1`,
-        account_code: 3014,
-        activity: 'passive',
-        type: 'credit',
-        name: 'Текущий счет клиента',
-        currency_type: 'BYN',
-        balance: balance,
-        client_id: clientId
-      }),
-      Models().Account.create(
-       {
-         number: `3014${random()}1`,
-         account_code: 3014,
-         activity: 'passive',
-         type: 'credit',
-         name: ' Процентный счет клиента',
-         currency_type: 'BYN',
-         balance: 0,
-         client_id: clientId
-       }),
-      Models().Account.create(
-       {
-         number: `3014${random()}1`,
-         account_code: 3014,
-         activity: 'passive',
-         type: 'debit',
-         name: 'Процентный счет клиента',
-         currency_type: 'BYN',
-         balance: 0,
-         client_id: clientId
-       }),
-  ]).then((res) => {
-    deposit.account_current_debet_id  = res[0].id;
-    deposit.account_current_credit_id = res[1].id;
-    deposit.account_percent_credit_id = res[2].id;
-    deposit.account_percent_debet_id  = res[3].id;
-    console.log(deposit);
+    Models().Account.create({
+      number: `3014${random()}1`,
+      account_code: 3014,
+      activity: 'passive',
+      type: 'debit',
+      name: 'Текущий счет клиента',
+      currency_type: 'BYN',
+      balance: balance,
+      client_id: clientId
+    }),
+    Models().Account.create({
+      number: `3014${random()}1`,
+      account_code: 3014,
+      activity: 'passive',
+      type: 'credit',
+      name: 'Текущий счет клиента',
+      currency_type: 'BYN',
+      balance: balance,
+      client_id: clientId
+    }),
+    Models().Account.create({
+      number: `3014${random()}1`,
+      account_code: 3014,
+      activity: 'passive',
+      type: 'credit',
+      name: ' Процентный счет клиента',
+      currency_type: 'BYN',
+      balance: 0,
+      client_id: clientId
+    }),
+    Models().Account.create({
+      number: `3014${random()}1`,
+      account_code: 3014,
+      activity: 'passive',
+      type: 'debit',
+      name: 'Процентный счет клиента',
+      currency_type: 'BYN',
+      balance: 0,
+      client_id: clientId
+    }),
+    Models().Account.findBankAccounts()
+      .then(bankAccounts => {
+        return Promise.all([
+          bankAccounts.bank.credit.plus(balance),
+          bankAccounts.cashDesk.credit.plus(balance),
+          bankAccounts.cashDesk.debit.plus(balance),
+        ]);
+      })
+  ])
+  .spread((debit, credit, percentCredit, percentDebit, ...bankOperations) => {
+    deposit.account_current_debit_id  = debit.id;
+    deposit.account_current_credit_id = credit.id;
+    deposit.account_percent_credit_id = percentCredit.id;
+    deposit.account_percent_debit_id  = percentDebit.id;
     return Models().Deposit.create(deposit);
-
   });
 }
 
@@ -430,7 +444,7 @@ module.exports = (router) => {
 
   router.get('/finish', async (req, res) => {
     try {
-      const data = await finishDay();
+      const data = await finishMonth();
       res.json(data);
     } catch (err) {
       console.error(err);
