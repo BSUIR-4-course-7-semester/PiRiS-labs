@@ -12,7 +12,7 @@ export class CreditCalculator {
   }
 
   static annuityPays(creditOrder: CreditOrder) {
-    const interestRateForMonth = creditOrder.interest_rate / 12 / 100;
+    const interestRateForMonth = creditOrder.interest_rate / creditOrder.term / 100;
     const annuityCoefficient =
       (interestRateForMonth * Math.pow(1 + interestRateForMonth, creditOrder.term))
       /
@@ -48,7 +48,7 @@ export class CreditCalculator {
     const result = [];
 
     for(let month = 0; month < creditOrder.term; month++) {
-      const percents = remainToPay(month, creditOrder.amount, baseMonthPay) * creditOrder.interest_rate / 12 / 100;
+      const percents = remainToPay(month, creditOrder.amount, baseMonthPay) * creditOrder.interest_rate / creditOrder.term / 100;
       const pay = Math.round((baseMonthPay + percents) * 100) / 100;
       result.push(pay);
     }

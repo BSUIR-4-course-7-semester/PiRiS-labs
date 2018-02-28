@@ -1,5 +1,6 @@
 const forceUpdate = require('../config/settings').database.forceUpdate;
 const forceDatabaseUpdate = forceUpdate || !!process.env.FORCE_DB_UPDATE;
+const Sequelize = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   const CreditOrder = sequelize.define('CreditOrder', {
@@ -26,6 +27,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     term: {
       type: DataTypes.INTEGER,
+    },
+    month_passed: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
     },
     amount: {
       type: DataTypes.DECIMAL(10, 2),
@@ -84,6 +90,22 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'account_percent_debit_id',
       as: 'account_percent_debit'
     });
+  };
+
+  CreditOrder.findActiveCredits = function() {
+    return this.findAll({
+      where: {
+        month_passed: {
+          $lt: Sequelize.col('CreditOrder.term')
+        }
+      },
+      include: [{ all: true }]
+    });
+  };
+
+  CreditOrder.prototype.incPassedMonth = function () {
+    this.month_passed += 1;
+    return this.save();
   };
 
   return CreditOrder.sync({ force: forceDatabaseUpdate })

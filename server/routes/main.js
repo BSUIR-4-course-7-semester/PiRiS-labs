@@ -18,7 +18,7 @@ async function finishMonthForDeposits(bankAccounts) {
   const deposits = await Models().Deposit.findActiveDeposits();
 
   return Promise.all(deposits.map(async deposit => {
-    const monthPercents = deposit.start_balance * deposit.interest_rate / 12 / 100;
+    const monthPercents = deposit.start_balance * deposit.interest_rate / deposit.term_in_month / 100;
     return Promise.all([
       deposit.incPassedMonth(),
       bankAccounts.cashDesk.debit.plus(monthPercents),
@@ -44,6 +44,46 @@ async function finishMonthForDeposits(bankAccounts) {
   }));
 }
 
+function getAnnuityPayment(creditOrder) {
+  const base = parseFloat(creditOrder.amount) / creditOrder.term;
+  const percent = creditOrder.interest_rate / creditOrder.term / 100 * parseFloat(creditOrder.amount);
+  return ({ percent, base });
+}
+
+function getDifferentiatedPayment(creditOrder) {
+  const base = parseFloat(creditOrder.amount) / creditOrder.term;
+  const percent = creditOrder.interest_rate / creditOrder.term / 100 *
+                  (parseFloat(creditOrder.amount) - parseFloat(creditOrder.amount) / creditOrder.term * creditOrder.month_passed);
+  return ({ percent, base });
+}
+
+async function finishMonthForCredits(bankAccounts) {
+  const credits = await Models().CreditOrder.findActiveCredits();
+
+  return Promise.all(credits.map(async credit => {
+    const monthPayment = credit.credit.type === 'annuity' ? getAnnuityPayment(credit) : credit.credit.type === 'differentiated' ? getDifferentiatedPayment(credit) : null;
+    return Promise.all([
+      credit.incPassedMonth(),
+      // процент за месяц
+      credit.account_percent_credit.plus(monthPayment.percent),
+      bankAccounts.bank.credit.plus(monthPayment.percent),
+      bankAccounts.cashDesk.debit.plus(monthPayment.percent),
+      bankAccounts.cashDesk.credit.plus(monthPayment.percent),
+      credit.account_percent_debit.plus(monthPayment.percent),
+      // основной платёж за месяц
+      bankAccounts.cashDesk.debit.plus(monthPayment.base),
+      bankAccounts.cashDesk.credit.plus(monthPayment.base),
+      credit.account_current_debit.plus(monthPayment.base),
+      credit.account_current_credit.plus(monthPayment.base),
+      bankAccounts.bank.credit.plus(monthPayment.base),
+    ])
+      .then(_ => {
+        console.log("Close month for credits");
+        return _;
+      });
+  }));
+}
+
 async function finishMonth() {
   const today = moment();
   const bankAccounts = await Models().Account.findBankAccounts();
@@ -51,6 +91,7 @@ async function finishMonth() {
   return Promise.all([
     finishMonthForDeposits(bankAccounts),
     // payCredit(today, accounts.bank, accounts.cashDesk)
+    finishMonthForCredits(bankAccounts)
   ]);
 }
 
@@ -96,7 +137,7 @@ function isReadyForFullPercent(today, document) {
 
 
 function getDepositPercent(deposit, month) {
-  return deposit.account_current_credit.balance * deposit.interest_rate / 12 * month;
+  return deposit.account_current_credit.balance * deposit.interest_rate / deposit.term_in_month * month;
 }
 
 async function sendPercent(today, bank, deposit) {
@@ -179,7 +220,7 @@ async function moveCreditToCash(cash, credit) {
 async function payCreditPercentToBank(today, bank, cash, credit) {
   if (credit.credit.type === 'annuity') {
     if (isReadyForMonthPercent(today, credit)) {
-      const percent = credit.account_current_credit.balance * credit.interest_rate / 12;
+      const percent = credit.account_current_credit.balance * credit.interest_rate / credit.term;
       bank.credit.balance += percent;
       cash.debit.balance += percent;
       cash.credit.balance += percent;
@@ -208,32 +249,29 @@ function createIndividualCreditAccounts(credit) {
   const random = () => Math.round(Math.random() * 10000000);
 
   return Promise.all([
-    Models().Account.create(
-     {
-       number: `2400${random()}1`,
-       account_code: 2400,
-       activity: 'active',
-       type: 'debit',
-       name: 'Текущий счет клиента',
-       currency_type: 'BYN',
-       balance: balance,
-       client_id: clientId
-     }),
-    Models().Account.create(
-     {
+    Models().Account.create({
+      number: `2400${random()}1`,
+      account_code: 2400,
+      activity: 'active',
+      type: 'debit',
+      name: 'Текущий счет клиента',
+      currency_type: 'BYN',
+      balance: balance,
+      client_id: clientId
+    }),
+    Models().Account.create({
        number: `2400${random()}1`,
        account_code: 2400,
        activity: 'active',
        type: 'credit',
        name: 'Текущий счет клиента',
        currency_type: 'BYN',
-       balance: 0,
+       balance: balance,
        client_id: clientId
      }),
-    Models().Account.create(
-     {
-       number: `2400${random()}1`,
-       account_code: 2400,
+    Models().Account.create({
+       number: `2475${random()}1`,
+       account_code: 2475,
        activity: 'active',
        type: 'credit',
        name: ' Процентный счет клиента',
@@ -241,10 +279,9 @@ function createIndividualCreditAccounts(credit) {
        balance: 0,
        client_id: clientId
      }),
-    Models().Account.create(
-     {
-       number: `2400${random()}1`,
-       account_code: 2400,
+    Models().Account.create({
+       number: `2475${random()}1`,
+       account_code: 2475,
        activity: 'active',
        type: 'debit',
        name: 'Процентный счет клиента',
@@ -252,15 +289,35 @@ function createIndividualCreditAccounts(credit) {
        balance: 0,
        client_id: clientId
      }),
+    Models().Account.findBankAccounts()
+      .then(bankAccounts => {
+        return Promise.all([
+          bankAccounts.bank.debit.plus(balance),
+          bankAccounts.cashDesk.debit.plus(balance),
+        ]);
+      })
   ])
-    .then((res) => {
-      credit.account_current_debit_id  = res[0].id;
-      credit.account_current_credit_id = res[1].id;
-      credit.account_percent_credit_id = res[2].id;
-      credit.account_percent_debit_id  = res[3].id;
-      console.log(credit);
-      return Models().Credit.create(credit)
-    });
+  .spread((debit, credit2, percentCredit, percentDebit, ...bankOperations) => {
+    credit.account_current_debit_id  = debit.id;
+    credit.account_current_credit_id = credit2.id;
+    credit.account_percent_credit_id = percentCredit.id;
+    credit.account_percent_debit_id  = percentDebit.id;
+    console.log(credit);
+    return Models().CreditOrder.create(credit)
+      .then(res => {
+        console.log('Credit: ', res);
+        return Promise.resolve(res);
+      });
+  });
+
+  /*.then((res) => {
+     credit.account_current_debit_id  = res[0].id;
+     credit.account_current_credit_id = res[1].id;
+     credit.account_percent_credit_id = res[2].id;
+     credit.account_percent_debit_id  = res[3].id;
+     console.log(credit);
+     return Models().Credit.create(credit)
+   })*/
 }
 
 function createIndividualDepositAccounts(deposit) {

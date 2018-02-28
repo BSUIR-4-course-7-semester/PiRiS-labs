@@ -1,6 +1,6 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.bulkInsert('Clients', [{
+    return queryInterface.bulkInsert('Clients', [/*{
       surname: 'Боровский',
       first_name: 'Максим',
       patronymic: 'Анатольевич',
@@ -8,7 +8,7 @@ module.exports = {
       passport_series: 'МС',
       passport_number: '2524545',
       passport_reducer: 'РОВД',
-      passport_reducing_date: new Date(2013, 05, 13),
+      passport_reducing_date: new Date(2013, 5, 13),
       identification_number: '7777777A333AA1',
       birth_place: 'Копыль',
       actual_residence_city_id: 1,
@@ -25,6 +25,31 @@ module.exports = {
       disability_id: null,
       pensioner: false,
       monthly_revenue: 1000.00,
+    },*/{
+      surname: 'Лебедева',
+      first_name: 'Анастасия',
+      patronymic: 'Олеговна',
+      birth_date: new Date(1996, 10, 24),
+      passport_series: 'HB',
+      passport_number: '2594991',
+      passport_reducer: 'РОВД',
+      passport_reducing_date: new Date(2010, 3, 5),
+      identification_number: '7777777H022PB9',
+      birth_place: 'Калинковичи',
+      actual_residence_city_id: 2,
+      actual_address: 'Дзержинского 95',
+      home_tel_number: '80177453137',
+      mobile_tel_number: '+375339035459',
+      email: 'anastasia.leb3deva@yandex.by',
+      job_place: 'Senior Node',
+      job_position: 'developer',
+      registration_city_id: 3,
+      registration_address: 'пр. Дзержинского',
+      marital_status_id: 2,
+      nationality_id: 1,
+      disability_id: null,
+      pensioner: false,
+      monthly_revenue: 1200.00,
     }], {});
   },
 
