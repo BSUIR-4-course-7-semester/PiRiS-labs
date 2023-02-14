@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import {Client} from "../../entities/client";
-import {DataService} from "../../services/data.service";
-import * as _ from 'lodash';
+import { Client } from "../../entities/client";
+import { DataService } from "../../services/data.service";
+import { sortBy } from 'lodash';
 
 @Component({
   selector: 'client-manager',
@@ -31,11 +31,11 @@ export class ClientManagerComponent {
 
   constructor(private dataService: DataService) {
     this.dataService.fetchClients()
-    .then(data => {
-      this.clients = _.sortBy(data, a => {
-        return a.surname;
+      .then(data => {
+        this.clients = sortBy(data, a => {
+          return a.surname;
+        });
       });
-    });
   }
 
   createNewClient() {
@@ -53,26 +53,26 @@ export class ClientManagerComponent {
 
     method = method.bind(this.dataService);
     return method(clientData)
-    .then(data => {
-      if (clientData.id) {
-        const client = this.clients.find(c => c.id === clientData.id);
-        Object.keys(clientData).forEach(key => client[key] = clientData[key]);
-      } else {
-        this.clients.push(data);
-      }
-    })
-    .catch(err => {
-      this.message = err;
-    });
+      .then(data => {
+        if (clientData.id) {
+          const client = this.clients.find(c => c.id === clientData.id);
+          Object.keys(clientData).forEach(key => client[key] = clientData[key]);
+        } else {
+          this.clients.push(data);
+        }
+      })
+      .catch(err => {
+        this.message = err;
+      });
   }
 
   handleDelete(client) {
     this.dataService.deleteClient(client.id)
-    .then(() => {
-      this.clients = this.clients.filter(c => c.id !== client.id);
-      if (client.id) {
-        this.client = new Client();
-      }
-    });
+      .then(() => {
+        this.clients = this.clients.filter(c => c.id !== client.id);
+        if (client.id) {
+          this.client = new Client();
+        }
+      });
   }
 }

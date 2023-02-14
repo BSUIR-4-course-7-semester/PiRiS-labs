@@ -21,10 +21,10 @@
     "@angular/platform-browser": "^5.2.0",
     "@angular/platform-browser-dynamic": "^5.2.0",
     "@angular/router": "^5.2.0",
-    "@types/lodash": "^4.14.104",
     "angular4-fusioncharts": "^1.0.0",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
+    "concurrently": "^4.1.2",
     "core-js": "^2.4.1",
     "express": "^4.16.2",
     "fusioncharts": "^3.12.2",
@@ -57,5 +57,9 @@
     "ts-node": "~4.1.0",
     "tslint": "~5.9.1",
     "typescript": "~2.5.3"
+  },
+  "engines": {
+	  "node": ">=10.24.1 <11"
   }
+
 }
